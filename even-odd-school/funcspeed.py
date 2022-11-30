@@ -17,41 +17,34 @@ def oddoneout(list):
     for i in list:
         if i % 2 == 0:
             even += 1
-        elif i % 2 != 0:
-            odd += 1
         else:
-            print(f"Invalid list item {i} at index {list.index(i)}. Terminating.")
-            return None
+            odd += 1
     if even > odd and odd != 0:
         for i in list:
             if i % 2 != 0:
                 return i
-    elif odd > even and even != 0:
+    else:
         for i in list:
             if i % 2 == 0:
                 return i
-    elif odd == 0 or even == 0:
-        print("There are no \"odd one out\" numbers in this list. Terminating.")
-        return None
-    elif odd == even:
-        print("There are no \"odd one out\" numbers in this list, as the number of even numbers to the number of odd numbers is equal. Terminating.")
-        return None
-    else:
-        print("Unknown error. Terminating.")
-        return None
 
-st1 = time.time()
+st1 = time.process_time()
 findOut(myls)
-et1 = time.time()
+et1 = time.process_time()
 
-st2 = time.time()
+st2 = time.process_time()
 oddoneout(myls)
-et2 = time.time()
+et2 = time.process_time()
+
+print(f"""
+Mr. Long's function returns  {findOut(myls)}
+Nola's function returns      {oddoneout(myls)}\
+""")
 
 el1 = et1 - st1
 el2 = et2 - st2
 
 print(f"""
 Mr. Long's function finished in {el1:10f} seconds.
-Nola's function finished in {el2:10f} seconds.
+Nola's function finished in     {el2:10f} seconds.
 """)
