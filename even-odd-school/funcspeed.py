@@ -3,17 +3,13 @@ import time
 myls = [70, 40, 32, 65, 78, 100, 1542, 42, 16, 2006, 2008, 72, 78, 100, 1542, 42, 16, 2006, 2008, 72, 78, 100, 1542, 42, 16, 2006, 2008, 72]
 
 def findOut(x):
-    odds = []
-    evens = []
-    for items in x:
-        if items%2:
-            odds.append(items)
-        else:
-            evens.append(items)
-    if len(odds) == 1:
-        print(odds[0])
+    if x[0]%2 + x[1]%2 + x[2]%2 >= 2:
+        modifier = 0
     else:
-        print(evens[0])
+        modifier = 1
+    for items in x:
+        if items%2 == modifier:
+            return items
 
 def oddoneout(list):
     even = 0
