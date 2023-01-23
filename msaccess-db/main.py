@@ -20,6 +20,7 @@ def insertquery(users,realname,desc):
 
 def updatequery(column,text,condition):
     str = f"UPDATE Devs SET {column} = '{text}' {condition};"
+    print(str)
     cursor.execute(str)
     cursor.commit()
 
