@@ -1,42 +1,50 @@
 import pyodbc
-from guizero import App, Window, TextBox, PushButton, ListBox, Combo
+from guizero import App, Window, TextBox, Text, PushButton, Combo
 
 conn = pyodbc.connect(r"Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=C:/Users/redpe/dev/school-projects/msaccess-db/N11info-test.accdb;")
 cursor = conn.cursor()
-#cursor.execute("SELECT * FROM Repos FROM ;")
 
-#for row in cursor.fetchall():
-#    print(row)
-def fetchdevusers():
-    holding = [""]
-    users = cursor.execute("SELECT Users FROM Devs;").fetchall()
-    for username in users:
-        holding.append(f"WHERE Users='{username[0]}'")
-    return holding
+def selectquery(column,condition):
+    output = cursor.execute(f"SELECT {column} FROM Devs {condition};").fetchall()
+    outputwin = Window(app,title=f"SELECT {column} FROM Devs {condition};")
+    TextBox(outputwin,text=output,multiline=True,enabled=False,width="fill",height="fill")
 
-def fetchdevinfo():
-    result = cursor.execute(f"SELECT {field.value} FROM Devs {filter.value};").fetchall()
-    finalbox.value = result
+def insertquery(users,realname,desc):
+    str = f"INSERT INTO Devs (Users,RealName,Description) VALUES ('{users}','{realname}','{desc}');"
+    cursor.execute(str)
+    outputwin = Window(app,title=str)
+    TextBox(outputwin,text="Done",multiline=True,enabled=False,width="fill",height="fill")
 
-def executesql():
+def launchwindow():
     match operation.value:
-        case "Fetch":
-            result = cursor.execute(f"SELECT {field.value} FROM Devs {filter.value};").fetchall()
-            finalbox.value = result
+        case "Select":
+            selectapp = Window(app,title="Select Query Generator")
+            Text(selectapp,text="Select")
+            columncombo = Combo(selectapp,options=["*","ID","Users","Realname","Description"])
+            Text(selectapp,text="from Devs")
+            condition = TextBox(selectapp,text="",width="fill")
+            PushButton(selectapp,text="Run",command=lambda:selectquery(columncombo.value,condition.value))
         case "Insert":
-            print("Placeholder Text")
+            insertapp = Window(app,title="Insert Query Generator")
+            Text(insertapp,text="Insert into Devs")
+            Text(insertapp,text="Boxes are Username, Real Name and Description respectfully.")
+            users = TextBox(insertapp,text="",width="fill")
+            realname = TextBox(insertapp,text="",width="fill")
+            desc = TextBox(insertapp,text="",width="fill")
+            PushButton(insertapp,text="Run",command=lambda:insertquery(users.value,realname.value,desc.value))
         case "Update":
-            print("Placeholder Text")
+            updateapp = Window(app,title="Update Query Generator")
+            Text(updateapp,text="Update Devs, Set")
+            columncombo = Combo(updateapp,options=["Users","Realname","Description"])
+            Text(updateapp,text="from Devs")
+            condition = TextBox(updateapp,text="",width="fill")
+            PushButton(updateapp,text="Run",command=lambda:selectquery(columncombo.value,condition.value))
         case "Delete":
-            print("Placeholder Text")
+            deleteapp = Window(app,title="Delete Query Generator")
 
-app = App(title="N11 MSDB",layout="grid",width=500,height=150)
-operation = Combo(app,options=["Fetch", "Insert", "Update", "Delete"],width=11,height=1,grid=[0,0])
-field = Combo(app,options=["*","ID","RealName","Description"],width=11,height=1,grid=[1,0])
-filter = Combo(app,options=fetchdevusers(),width=27,height=1,grid=[2,0])
-label = TextBox(app,text="from Devs",multiline=True,enabled=False,width=9,height=1,grid=[3,0])
-devinfo = PushButton(app,text="Fetch",align="bottom",grid=[1,1],command=fetchdevinfo)
-finalbox = TextBox(app,text="Output will show up here.",multiline=True,enabled=False,scrollbar=True,width=22,height=7,grid=[2,1])
-
+app = App(title="N11 MSDB",width=250)
+operation = Combo(app,options=["Select", "Insert", "Update", "Delete"],width=20,height=2)
+PushButton(app,text="Open Query Generator",command=launchwindow,width=19,height=2)
+#output = TextBox(app,text="Output will appear here.",multiline=True,enabled=False,width=20,height=50)
 
 app.display()
