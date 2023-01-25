@@ -14,31 +14,33 @@
             padding-left: 2%;
             padding-top: 2%;
         }
-        h1,h2,h3 {font-family: 'Source Code Pro', monospace;}
-        p {
-            border-left: 4px solid #00C6E9;
-            padding-left: 10px;
-            border-radius: 4px;
-        }
         img {
             padding: 16px;
             border: #111111 4px solid;
             border-radius: 16px;
             background-color: #ffffff;
         }
-        ul {
-            list-style-type: square;
+        .heading {
+            font-size: large;
+            font-family: 'Source Code Pro', monospace;
         }
-        li {
+
+        .dialogue {
+            border-left: 4px solid #00C6E9;
+            padding-left: 10px;
+            border-radius: 4px;
+        }
+        .bullet {
+            list-style-type: square;
             padding-bottom: 5px;
         }
-        a {
+        .link {
             color: #0075FF;
         }
-        a:visited {
+        .link:visited {
             color: #0075FF;
         }
-        a:hover {
+        .link:hover {
             color: #00ff00;
             background-color: #000000;
             padding: 4px;
@@ -46,25 +48,21 @@
     </style>
 </head>
 <body>
-    <h1>Guten Tag!</h1>
+    <div class="heading">Guten Tag!</div>
     <img src="https://raw.githubusercontent.com/gingerwitch64/gingerwitch64/main/gingerwitch.png" alt="A pixel sketch of me as a little witch." width="256px">
-    <p>My name is Nola, and my username online is usually some variation of "gingerwitch" (gingerwitch_, ggingerwitch, gingerwitch64, etc.), because of course others have thought of such a name before me. Although, it does make me wonder--why did they choose it? For a similar reason to me? Something different? The natural curiosity of such a situation that comes to us all.</p>
-    <p>I'm getting carried away. Anywho:</p>
-    <h2>My interests and hobbies</h2>
-    <ul>
-        <li>I enjoy programming and hope to turn it into a career!</li>
-        <li>I love computers, messing around with them, and explaining how they work.</li>
-        <li>I really enjoy using Linux and think it's amazing.</li>
-        <li>I love playing FPSs, specifically (as of time of writing) <b>Battlefield 1</b>.</li>
-        <li>Although I am nowhere near fluent, I do enjoy learning German in my free time.</li>
-    </ul>
-    <h3>Links to my profiles:</h3>
-    <ul>
-        <li>Youtube - <a href="https://www.youtube.com/channel/UC_3DYxXjSZ3fLUyuetuYufw">@gingerwitch64</a></li>
-        <ul><li>Note that I am <b>not active</b> on my Youtube channel (as of time of writing), just throwing it in.</li></ul>
-        <li>GitHub - <a href="https://github.com/gingerwitch64">gingerwitch64</a></li>
-        <li>Work Email - <a href="mailto:nolag@n11.dev">nolag@n11.dev</a></li>
-        <ul><li>I will virtually never be active on this email, and I think that the email server also may be down. Again, I'm just throwing things in.</li></ul>
-    </ul>
+    <div class="dialogue">My name is Nola, and my username online is usually some variation of "gingerwitch" (gingerwitch_, ggingerwitch, gingerwitch64, etc.), because of course others have thought of such a name before me. Although, it does make me wonder--why did they choose it? For a similar reason to me? Something different? The natural curiosity of such a situation that comes to us all.</div>
+    <div class="dialogue">I'm getting carried away. Anywho:</div>
+    <div class="heading">My interests and hobbies</div>
+        <div class="bullet">I enjoy programming and hope to turn it into a career!</div>
+        <div class="bullet">I love computers, messing around with them, and explaining how they work.</div>
+        <div class="bullet">I really enjoy using Linux and think it's amazing.</div>
+        <div class="bullet">I love playing FPSs, specifically (as of time of writing) <b>Battlefield 1</b>.</div>
+        <div class="bullet">Although I am nowhere near fluent, I do enjoy learning German in my free time.</div>
+    <div class="heading">Links to my profiles:</div>
+        <div class="bullet">Youtube - <a href="https://www.youtube.com/channel/UC_3DYxXjSZ3fLUyuetuYufw">@gingerwitch64</a></div>
+        <div class="bullet">Note that I am <b>not active</b> on my Youtube channel (as of time of writing), just throwing it in.</div></ul>
+        <div class="bullet">GitHub - <a href="https://github.com/gingerwitch64">gingerwitch64</a></div>
+        <div class="bullet">Work Email - <a href="mailto:nolag@n11.dev">nolag@n11.dev</a></div>
+        <div class="bullet">I will virtually never be active on this email, and I think that the email server also may be down. Again, I'm just throwing things in.</div></ul>
 </body>
 </html>
