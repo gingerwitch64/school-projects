@@ -11,58 +11,92 @@
             background-color: #e0e0e0;
             color: #111111;
             font-family: 'Merriweather', serif;
-            padding-left: 2%;
+            padding-left: 20%;
+            padding-right: 20%;
             padding-top: 2%;
         }
+        div {
+            margin-top: 1%;
+            margin-bottom: 1%;
+        }
         img {
+            margin: 10px;
             padding: 16px;
             border: #111111 4px solid;
             border-radius: 16px;
             background-color: #ffffff;
         }
         .heading {
-            font-size: large;
+            font-size: 28px;
+            font-weight: 800;
             font-family: 'Source Code Pro', monospace;
         }
 
-        .dialogue {
+        div.separator {
+            height: 24px;
+        }
+
+        div.dialogue {
+            font-size: 16px;
             border-left: 4px solid #00C6E9;
             padding-left: 10px;
             border-radius: 4px;
+            max-width: 50%;
+            line-height: 26px;
+            margin-bottom: 16px;
         }
-        .bullet {
+        div.listnest {
+            padding: 1%;
+        }
+        .bullet::before {
+            margin-left: 10px;
+            content: "• ";
             list-style-type: square;
-            padding-bottom: 5px;
         }
-        .link {
+        .subbullet::before {
+            margin-left: 25px;
+            content: "◦ ";
+            list-style-type: square;
+        }
+        span.link {
             color: #0075FF;
         }
-        .link:visited {
+        span.link:visited {
             color: #0075FF;
         }
-        .link:hover {
+        span.link:hover {
             color: #00ff00;
             background-color: #000000;
             padding: 4px;
+        }
+        span.bold {
+            font-weight: 800;
         }
     </style>
 </head>
 <body>
     <div class="heading">Guten Tag!</div>
     <img src="https://raw.githubusercontent.com/gingerwitch64/gingerwitch64/main/gingerwitch.png" alt="A pixel sketch of me as a little witch." width="256px">
-    <div class="dialogue">My name is Nola, and my username online is usually some variation of "gingerwitch" (gingerwitch_, ggingerwitch, gingerwitch64, etc.), because of course others have thought of such a name before me. Although, it does make me wonder--why did they choose it? For a similar reason to me? Something different? The natural curiosity of such a situation that comes to us all.</div>
+    <div class="dialogue">My name is Nola, and my username online is usually some variation of "gingerwitch" (gingerwitch_, ggingerwitch, gingerwitch64, etc.), because of course others have thought of such a name before me.</div>
+    <div class="dialogue">Although sometimes it does make me wonder--why did they choose it? For a similar reason to me? Something different? The natural curiosity of such a situation that comes to us all.</div>
     <div class="dialogue">I'm getting carried away. Anywho:</div>
+    <div class="separator"></div>
     <div class="heading">My interests and hobbies</div>
+    <div class="listnest">
         <div class="bullet">I enjoy programming and hope to turn it into a career!</div>
         <div class="bullet">I love computers, messing around with them, and explaining how they work.</div>
         <div class="bullet">I really enjoy using Linux and think it's amazing.</div>
-        <div class="bullet">I love playing FPSs, specifically (as of time of writing) <b>Battlefield 1</b>.</div>
+        <div class="bullet">I love playing FPSs, specifically (as of time of writing) <span class="bold">Battlefield 1</span>.</div>
         <div class="bullet">Although I am nowhere near fluent, I do enjoy learning German in my free time.</div>
+    </div>
+    <div class="separator"></div>
     <div class="heading">Links to my profiles:</div>
-        <div class="bullet">Youtube - <a href="https://www.youtube.com/channel/UC_3DYxXjSZ3fLUyuetuYufw">@gingerwitch64</a></div>
-        <div class="bullet">Note that I am <b>not active</b> on my Youtube channel (as of time of writing), just throwing it in.</div></ul>
-        <div class="bullet">GitHub - <a href="https://github.com/gingerwitch64">gingerwitch64</a></div>
-        <div class="bullet">Work Email - <a href="mailto:nolag@n11.dev">nolag@n11.dev</a></div>
-        <div class="bullet">I will virtually never be active on this email, and I think that the email server also may be down. Again, I'm just throwing things in.</div></ul>
+    <div class="listnest">
+        <div class="bullet">Youtube - <span class="link" href="https://www.youtube.com/channel/UC_3DYxXjSZ3fLUyuetuYufw">@gingerwitch64</span></div>
+        <div class="subbullet">Note that I am <span class="bold">not active</span> on my Youtube channel (as of time of writing), just throwing it in.</div>
+        <div class="bullet">GitHub - <span class="link" href="https://github.com/gingerwitch64">gingerwitch64</span></div>
+        <div class="bullet">Work Email - <span class="link" href="mailto:nolag@n11.dev">nolag@n11.dev</span></div>
+        <div class="subbullet">I will virtually never be active on this email, and I think that the email server also may be down. Again, I'm just throwing things in.</div>
+    </div>
 </body>
 </html>
