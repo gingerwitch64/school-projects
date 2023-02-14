@@ -37,11 +37,11 @@
         }
         
         function catImgSwitch() {
-            console.log(document.getElementById("catimg").src)
+            var local = window.location.pathname.replace("index.html", "img/");
             switch (document.getElementById("catimg").src) {
-                case "file:///C:/Users/redpe/dev/school-projects/js-css-page-thing/img/orange-cat.jpg": document.getElementById("catimg").src = "./img/siamese-cat.jpg"; break;
-                case "file:///C:/Users/redpe/dev/school-projects/js-css-page-thing/img/siamese-cat.jpg": document.getElementById("catimg").src = "./img/tabby-cat.jpg"; break;
-                case "file:///C:/Users/redpe/dev/school-projects/js-css-page-thing/img/tabby-cat.jpg": document.getElementById("catimg").src = "./img/orange-cat.jpg"; break;
+                case "file://" + local + "orange-cat.jpg": document.getElementById("catimg").src = ("file://" + local + "siamese-cat.jpg"); break;
+                case "file://" + local + "siamese-cat.jpg": document.getElementById("catimg").src = ("file://" + local + "tabby-cat.jpg"); break;
+                case "file://" + local + "tabby-cat.jpg": document.getElementById("catimg").src = ("file://" + local + "orange-cat.jpg"); break;
             }
         }
     </script>
@@ -57,16 +57,19 @@
         <label for="wb">White on Black</label><br>
         <input type="radio" name="pagestyle" id="by" value="Black on Yellow">
         <label for="by">Black on Yellow</label><br>
-        <input type="button" onclick="styleChange()" value="Change Style"/>
+        <input type="button" onclick="styleChange()" value="Change Style">
     </form><br>
-    <img id="catimg" src="./img/orange-cat.jpg" alt="cat"/><br>
-    <input type="button" onclick="catImgSwitch()" value="Cycle Cat Images"/>
+    <div class="h3">Cat Images</div>
+    <img id="catimg" src="./img/orange-cat.jpg" alt="cat"><br>
+    <input type="button" onclick="catImgSwitch()" value="Cycle Cat Images">
     <form>
-        <input type="checkbox" name="formstyle" id="no" value="None">
-        <label for="no">None</label>
-        <input type="checkbox" name="formstyle" id="br" value="Border Rounded">
-        <label for="br">Bordered</label>
-        <input type="checkbox" name="formstyle" id=""
+        <br>
+        <input type="radio" name="catimgstyle" id="no" value="No Styling">
+        <label for="no">No Styling</label>
+        <input type="radio" name="catimgstyle" id="br" value="Rounded Border">
+        <label for="br">Rounded Border</label>
+        <input type="radio" name="catimgstyle" id="bs" value="Straight Border">
+        <label for="bs">Straight Border</label>
     </form>
 </body>
 </html>
