@@ -18,6 +18,13 @@
         input[type=button] {
             margin: 4px;
         }
+        div#usergentext {
+            padding: 16px;
+            margin: 8px;
+            /*border: 4px solid grey;
+            width: -moz-fit-content;
+            width: fit-content;*/
+        }
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -67,6 +74,33 @@
                 }
             }
         }
+
+        function changeUserText() {
+            var ele = document.getElementsByName("uis");
+            var usrtxt = document.getElementById("usergentext")
+            for(i = 0; i < ele.length; i++) {
+                if(ele[i].checked) {
+                    switch (ele[i].value) {
+                        case "Default":
+                            usrtxt.style.fontStyle = "normal"
+                            usrtxt.style.fontWeight = "normal"
+                            usrtxt.style.borderLeft = ""
+                            break;
+                        case "Quotation":
+                            usrtxt.style.fontStyle = "italic"
+                            usrtxt.style.fontWeight = "normal"
+                            usrtxt.style.borderLeft = "4px solid blue"
+                            break;
+                        case "Bold":
+                            usrtxt.style.fontStyle = "normal"
+                            usrtxt.style.fontWeight = "800"
+                            usrtxt.style.borderLeft = ""
+                            break;
+                    }
+                }
+            }
+            usrtxt.innerHTML = document.getElementById("usrinpt").value
+        }
     </script>
 </head>
 <body>
@@ -95,5 +129,21 @@
         <label for="bs">Straight Border</label><br>
         <input type="button" onclick="catStyleChange()" value="Change Cat Image Border">
     </form><br>
+    <br>
+    <form>
+        <br>
+        <label for="usrinpt">Input Custom Text</label><br>
+        <input type="text" id="usrinpt" name="usrinpt">
+        <br><br>
+        <input type="radio" name="uis" id="de" value="Default">
+        <label for="de">Default</label><br>
+        <input type="radio" name="uis" id="qo" value="Quotation">
+        <label for="qo">Quotation</label><br>
+        <input type="radio" name="uis" id="ti" value="Bold">
+        <label for="ti">Bold</label><br>
+        <br>
+        <input type="button" onclick="changeUserText()" value="Change User Text">
+    </form><br>
+    <div id="usergentext"></div>
 </body>
 </html>
