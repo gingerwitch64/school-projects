@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your TODO List</title>
+    <style>
+        li#placeholder_item {
+            font-style: italic;
+            visibility: hidden;
+        }
+        input {
+            max-width: -moz-fit-content;
+            max-width: fit-content;
+        }
+        input::placeholder {
+            font-style: italic;
+            color: black;
+            opacity: 70%;
+        }
+    </style>
+    <script>
+        var localRoot = window.location.href
+        console.log(localRoot)
+
+        window.onload = document.getElementById("new_item_name").setAttribute('size',input.getAttribute('placeholder').length);
+
+        function fillInTodo() {
+            bullet = document.getElementById("todoli").appendChild("li")
+            bullet.innerHTML = "Hello world!"
+        }
+    </script>
+</head>
+<body>
+    <div id="main">
+        <ul id="todoli"></ul>
+        <label for="new_item_name">New Item:</label>
+        <input id="new_item_name" type="text" placeholder="ex. 'History paper due Monday'">
+    </div>
+</body>
+</html>
