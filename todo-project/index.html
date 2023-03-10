@@ -24,7 +24,9 @@
         var localRoot = window.location.href
         console.log(localRoot)
 
-        window.onload = document.getElementById("new_item_name").setAttribute('size',input.getAttribute('placeholder').length);
+        window.addEventListener("load", function(e){
+            document.getElementById("new_item_name").setAttribute('size',document.getElementById("new_item_name").getAttribute('placeholder').length);
+        })
 
         function fillInTodo() {
             bullet = document.getElementById("todoli").appendChild("li")
