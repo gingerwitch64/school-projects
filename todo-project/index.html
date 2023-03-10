@@ -25,12 +25,19 @@
         console.log(localRoot)
 
         window.addEventListener("load", function(e){
-            document.getElementById("new_item_name").setAttribute('size',document.getElementById("new_item_name").getAttribute('placeholder').length);
+            document.getElementById("new_item_name").setAttribute('size',document.getElementById("new_item_name").getAttribute('placeholder').length-7);
         })
 
-        function fillInTodo() {
-            bullet = document.getElementById("todoli").appendChild("li")
-            bullet.innerHTML = "Hello world!"
+        function appendItem() {
+            // Create node
+            var node = document.createElement("li");
+
+            // Create text node
+            var textnode = document.createTextNode(
+                document.getElementById("new_item_name").value
+            );
+            node.appendChild(textnode);
+            document.getElementById("todoli").appendChild(node);
         }
     </script>
 </head>
@@ -38,7 +45,8 @@
     <div id="main">
         <ul id="todoli"></ul>
         <label for="new_item_name">New Item:</label>
-        <input id="new_item_name" type="text" placeholder="ex. 'History paper due Monday'">
+        <input id="new_item_name" type="text" placeholder="ex. 'History essay due Monday'">
+        <input id="new_item_button" type="button" value="Append" onclick="appendItem()">
     </div>
 </body>
 </html>
