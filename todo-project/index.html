@@ -19,27 +19,10 @@
             color: black;
             opacity: 70%;
         }
-    </style>
-    <script>
-        var localRoot = window.location.href
-        console.log(localRoot)
-
-        window.addEventListener("load", function(e){
-            document.getElementById("new_item_name").setAttribute('size',document.getElementById("new_item_name").getAttribute('placeholder').length-7);
-        })
-
-        function appendItem() {
-            // Create node
-            var node = document.createElement("li");
-
-            // Create text node
-            var textnode = document.createTextNode(
-                document.getElementById("new_item_name").value
-            );
-            node.appendChild(textnode);
-            document.getElementById("todoli").appendChild(node);
+        .completed {
+            text-decoration: line-through;
         }
-    </script>
+    </style>
 </head>
 <body>
     <div id="main">
@@ -47,6 +30,44 @@
         <label for="new_item_name">New Item:</label>
         <input id="new_item_name" type="text" placeholder="ex. 'History essay due Monday'">
         <input id="new_item_button" type="button" value="Append" onclick="appendItem()">
+        <input id="clear_completed_button" type="button" value="Clear Completed" onclick="clearCompleted()">
     </div>
+    <script>
+        var localRoot = window.location.href
+        console.log(localRoot)
+        var mainList = document.getElementById("todoli")
+    
+        window.addEventListener("load", function(e){
+            document.getElementById("new_item_name").setAttribute('size',document.getElementById("new_item_name").getAttribute('placeholder').length);
+        })
+    
+        function appendItem() {
+            // Create node
+            var node = document.createElement("li");
+    
+            // Create text node
+            var textnode = document.createTextNode(
+                document.getElementById("new_item_name").value
+            );
+            node.appendChild(textnode);
+            node.addEventListener("dblclick",markItem);
+            mainList.appendChild(node);
+        }
+    
+        function markItem() {
+            if (this.classList.contains("completed")) {
+                this.classList.remove("completed")
+            } else {
+                this.classList.add("completed")
+            }
+        }
+
+        function clearCompleted() {
+            var compItems = mainList.getElementsByClassName("completed")
+            while (compItems.length > 0) {
+                compItems.item(0).remove()
+            }
+        }
+    </script>
 </body>
 </html>
