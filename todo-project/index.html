@@ -30,7 +30,9 @@
         <label for="new_item_name">New Item:</label>
         <input id="new_item_name" type="text" placeholder="ex. 'History essay due Monday'">
         <input id="new_item_button" type="button" value="Append" onclick="appendItem()">
-        <input id="clear_completed_button" type="button" value="Clear Completed" onclick="clearCompleted()">
+        <input type="button" value="Clear Completed" onclick="clearCompleted()">
+        <input type="button" value="Save" onclick="saveList()">
+        <input type="button" value="Load" onclick="loadList()">
     </div>
     <script>
         var localRoot = window.location.href
@@ -39,13 +41,12 @@
     
         window.addEventListener("load", function(e){
             document.getElementById("new_item_name").setAttribute('size',document.getElementById("new_item_name").getAttribute('placeholder').length);
+            loadList()
         })
     
         function appendItem() {
             // Create node
             var node = document.createElement("li");
-    
-            // Create text node
             var textnode = document.createTextNode(
                 document.getElementById("new_item_name").value
             );
@@ -66,6 +67,35 @@
             var compItems = mainList.getElementsByClassName("completed")
             while (compItems.length > 0) {
                 compItems.item(0).remove()
+            }
+        }
+
+        function saveList() {
+            var exportItems = []; // JSON Object
+            var domItems = mainList.children
+            for (var i = 0; i < domItems.length; i++) {
+                let currentItem = domItems.item(i)
+                exportItems.push({"text":currentItem.innerText,"completed":currentItem.classList.contains("completed")})
+            }
+            localStorage.setItem("savedList",JSON.stringify(exportItems))
+        }
+
+        function loadList() {
+            var domItems = mainList.children
+            while (domItems.length > 0) {
+                domItems.item(0).remove()
+            }
+            var importItems = JSON.parse(localStorage.getItem("savedList"))
+            for (var i = 0; i < importItems.length; i++) {
+                let currentItem = importItems[i]
+                let node = document.createElement("li");
+                let textnode = document.createTextNode(currentItem.text);
+                node.appendChild(textnode);
+                node.addEventListener("dblclick",markItem);
+                if (currentItem.completed) {
+                    node.classList.add("completed")
+                }
+                mainList.appendChild(node);
             }
         }
     </script>
