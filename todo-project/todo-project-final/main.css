@@ -1,0 +1,42 @@
+body {
+    background-color: #0373a7;
+}
+div#main {
+    background-color: #f6f6f6;
+    padding: 2%;
+    border: rgb(185, 185, 185) solid 4px;
+    margin: 4%;
+    max-width: fit-content;
+    border-radius: 16px;
+}
+ul#todoli {
+    /*border-left: lightskyblue solid 4px;*/
+    border: violet solid 4px;
+    border-radius: 16px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 32px;
+    padding-right: 16px;
+    width: fit-content;
+}
+ul#todoli:empty {
+    padding-left: 16px;
+}
+ul#todoli:empty::after {
+    content: "No List Items";
+    font-style: italic;
+    color: black;
+    opacity: 70%;
+}
+input {
+    max-width: -moz-fit-content;
+    max-width: fit-content;
+}
+input::placeholder {
+    font-style: italic;
+    color: black;
+    opacity: 70%;
+}
+.completed {
+    text-decoration: line-through;
+}
