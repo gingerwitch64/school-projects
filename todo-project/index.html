@@ -59,11 +59,15 @@
         <input type="button" value="Clear Completed" onclick="clearCompleted()">
         <input type="button" value="Save" onclick="saveList()">
         <input type="button" value="Load" onclick="loadList()">
+        <input type="button" value="Autosave: " id="autosave_button" onclick="autosaveToggle()">
     </div>
     <script>
         var localRoot = window.location.href
         console.log(localRoot)
         var mainList = document.getElementById("todoli")
+        if (localStorage.getItem("autosave") === null) {localStorage.setItem("autosave","On")}
+        document.getElementById("autosave_button").value = "Autosave: ".concat(localStorage.getItem("autosave"))
+        console.log(document.getElementById("autosave_button").value)
     
         window.addEventListener("load", function(e){
             document.getElementById("new_item_name").setAttribute('size',document.getElementById("new_item_name").getAttribute('placeholder').length);
@@ -79,6 +83,7 @@
             node.appendChild(textnode);
             node.addEventListener("dblclick",markItem);
             mainList.appendChild(node);
+            determineAutosave()
         }
     
         function markItem() {
@@ -87,6 +92,7 @@
             } else {
                 this.classList.add("completed")
             }
+            determineAutosave()
         }
 
         function clearCompleted() {
@@ -94,6 +100,7 @@
             while (compItems.length > 0) {
                 compItems.item(0).remove()
             }
+            determineAutosave()
         }
 
         function saveList() {
@@ -123,6 +130,21 @@
                 }
                 mainList.appendChild(node);
             }
+            determineAutosave()
+        }
+
+        function determineAutosave() {
+            if (localStorage.getItem("autosave") == "On") {saveList()}
+        }
+
+        function autosaveToggle() {
+            autosavelocalstatus = localStorage.getItem("autosave")
+            if (autosavelocalstatus == "On") {
+                localStorage.setItem("autosave", "Off")
+            } else {
+                localStorage.setItem("autosave", "On")
+            }
+            document.getElementById("autosave_button").value = "Autosave: ".concat(localStorage.getItem("autosave"))
         }
     </script>
 </body>
