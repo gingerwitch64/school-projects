@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPA Calculator</title>
+    <script defer src="./main.js"></script>
+</head>
+<body>
+    <label for="grade-sel">Grade:</label>
+    <select id="grade-sel" name="credit-sel">
+        <option value="A">A (4 pts)</option>
+        <option value="A-">A- (3.7 pts)</option>
+        <option value="B+">B+ (3.3 pts)</option>
+        <option value="B">B (3 pts)</option>
+        <option value="B-">B- (2.7 pts)</option>
+        <option value="C+">C+ (2.3 pts)</option>
+        <option value="C">C (2 pts)</option>
+        <option value="C-">C- (1.7 pts)</option>
+        <option value="D+">D+ (1.3 pts)</option>
+        <option value="D">D (1 pt)</option>
+        <option value="F">F (0 pts)</option>
+    </select>
+    <label for="credit-sel">Weight:</label>
+    <select id="credit-sel" name="credit-sel">
+        <option value="standard">Standard (No weight)</option>
+        <option value="honors">Honors (+0.5 pts)</option>
+        <option value="college">AP (+1 pts)</option>
+    </select>
+    <ol></ol>
+</body>
+</html>
