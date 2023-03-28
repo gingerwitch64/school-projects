@@ -1,6 +1,6 @@
 var localRoot = window.location.href
 console.log(localRoot)
-var mainList = document.getElementById("todoli")
+var mainList = document.getElementById("mainlist")
 if (localStorage.getItem("autosave") === null) {localStorage.setItem("autosave","On")}
 document.getElementById("autosave_button").value = "Autosave: ".concat(localStorage.getItem("autosave"))
 console.log(document.getElementById("autosave_button").value)
