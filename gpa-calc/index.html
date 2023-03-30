@@ -11,17 +11,17 @@
 <body>
     <label for="grade-sel">Grade:</label>
     <select id="grade-sel" name="credit-sel">
-        <option value="A">A (4 pts)</option>
-        <option value="A-">A- (3.7 pts)</option>
-        <option value="B+">B+ (3.3 pts)</option>
-        <option value="B">B (3 pts)</option>
-        <option value="B-">B- (2.7 pts)</option>
-        <option value="C+">C+ (2.3 pts)</option>
-        <option value="C">C (2 pts)</option>
-        <option value="C-">C- (1.7 pts)</option>
-        <option value="D+">D+ (1.3 pts)</option>
-        <option value="D">D (1 pt)</option>
-        <option value="F">F (0 pts)</option>
+        <option value="a">A (4 pts)</option>
+        <option value="a-minus">A- (3.7 pts)</option>
+        <option value="b-plus">B+ (3.3 pts)</option>
+        <option value="b">B (3 pts)</option>
+        <option value="b-minus">B- (2.7 pts)</option>
+        <option value="c-plus">C+ (2.3 pts)</option>
+        <option value="c">C (2 pts)</option>
+        <option value="c-minus">C- (1.7 pts)</option>
+        <option value="d-plus">D+ (1.3 pts)</option>
+        <option value="d">D (1 pt)</option>
+        <option value="f">F (0 pts)</option>
     </select>
     <label for="credit-sel">Weight:</label>
     <select id="credit-sel" name="credit-sel">
@@ -31,9 +31,11 @@
     </select>
     <ol id="mainlist"></ol>
     <input id="new_item_button" type="button" value="Append" onclick="appendItem()">
-    <input type="button" value="Clear Marked" onclick="clearCompleted()">
     <input type="button" value="Save" onclick="saveList()">
     <input type="button" value="Load" onclick="loadList()">
     <input type="button" value="Autosave: " id="autosave_button" onclick="autosaveToggle()">
+    <br>
+    <input type="button" value="Calculate GPA" onclick="calcGPA()">
+    <div id="gpa"></div>
 </body>
 </html>

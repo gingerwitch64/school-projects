@@ -18,6 +18,7 @@ div#main {
     padding-left: 32px;
     padding-right: 16px;
     width: fit-content;
+    background-color: #f6f6f6;
 }
 #mainlist:empty {
     padding-left: 16px;
@@ -28,6 +29,17 @@ div#main {
     color: black;
     opacity: 70%;
 }
+#gpa {
+    background-color: #f6f6f6;
+    color: black;
+    font-size: large;
+    width: fit-content;
+    height: fit-content;
+}
+#gpa:empty {
+    background-color: transparent;
+}
+#gpa:not(:empty)::before { content: "GPA: "; }
 input {
     max-width: -moz-fit-content;
     max-width: fit-content;
@@ -39,4 +51,46 @@ input::placeholder {
 }
 .completed {
     text-decoration: line-through;
+}
+.a::after {
+    content: "A";
+}
+.a-minus::after {
+    content: "A-";
+}
+.b-plus::after {
+    content: "B+";
+}
+.b::after {
+    content: "B";
+}
+.b-minus::after {
+    content: "B-";
+}
+.c-plus::after {
+    content: "C+";
+}
+.c::after {
+    content: "C";
+}
+.c-minus::after {
+    content: "C-";
+}
+.d-plus::after {
+    content: "D+";
+}
+.d::after {
+    content: "D";
+}
+.f::after {
+    content: "F";
+}
+.standard::before {
+    content: "Standard Credit: ";
+}
+.honors::before {
+    content: "Honors Credit: ";
+}
+.college::before {
+    content: "College Credit: ";
 }
