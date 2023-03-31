@@ -21,35 +21,40 @@ function removeMe() {
     determineAutosave()
 }
 
+function clearList() {
+    var domItems = mainList.children
+    while (domItems.length > 0) {
+        domItems.item(0).remove()
+    }
+    determineAutosave()
+}
+
 function calcGPA() {
     var domItems = mainList.children
     classes = domItems.length
-    preTotal = 0.0
+    var preTotal = 0.0
     for (var i = 0; i < domItems.length; i++) {
         let currentClasses = domItems.item(i).classList
         if (currentClasses.item(0) != "f") {
             switch (currentClasses.item(0)) {
-                case "a": preTotal += 4.0
-                case "a-minus": preTotal += 3.7
-                case "b-plus": preTotal += 3.3
-                case "b": preTotal += 3.0
-                case "b-minus": preTotal += 2.7
-                case "c-plus": preTotal += 2.3
-                case "c": preTotal += 2.0
-                case "c-minus": preTotal += 1.7
-                case "d-plus": preTotal += 1.3
-                case "d": preTotal += 1.0
+                case "a": preTotal += 4; break;
+                case "a-minus": preTotal += 3.7; break;
+                case "b-plus": preTotal += 3.3; break;
+                case "b": preTotal += 3; break;
+                case "b-minus": preTotal += 2.7; break;
+                case "c-plus": preTotal += 2.3; break;
+                case "c": preTotal += 2; break;
+                case "c-minus": preTotal += 1.7; break;
+                case "d-plus": preTotal += 1.3; break;
+                case "d": preTotal += 1; break;
             }
             switch (currentClasses.item(1)) {
-                case "honors": preTotal += 0.5
-                case "college": preTotal += 1.0
+                case "honors": preTotal += 0.5; break;
+                case "college": preTotal += 1; break;
             }
         }
     }
-    gpa = preTotal/classes
-    console.log(gpa)
-    Math.round((gpa + Number.EPSILON) * 100) / 100
-    console.log(gpa)
+    var gpa = (preTotal/classes).toFixed(2)
     document.getElementById("gpa").innerHTML = gpa
 }
 
@@ -64,10 +69,7 @@ function saveList() {
 }
 
 function loadList() {
-    var domItems = mainList.children
-    while (domItems.length > 0) {
-        domItems.item(0).remove()
-    }
+    clearList()
     var importItems = JSON.parse(localStorage.getItem("savedList"))
     for (var i = 0; i < importItems.length; i++) {
         let currentItem = importItems[i]

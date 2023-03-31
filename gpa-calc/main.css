@@ -35,6 +35,9 @@ div#main {
     font-size: large;
     width: fit-content;
     height: fit-content;
+    padding: 8px;
+    border-radius: 12px;
+    margin: 16px;
 }
 #gpa:empty {
     background-color: transparent;
