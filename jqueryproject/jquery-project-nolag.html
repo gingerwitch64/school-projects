@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rust Programming Language</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <style>
+        body {
+            padding: 2%;
+            background-color: #f7f7f7;
+            /*border: #555555 solid 4px;
+            max-width: fit-content;*/
+        }
+
+        img {
+            padding: 1%;
+            margin: 1%;
+        }
+
+        button {
+            margin: 0.5%;
+        }
+
+        a {
+            color: rgb(0, 153, 255);
+        }
+
+        a:visited {
+            color: rgb(0, 153, 255);
+        }
+
+        .heading {
+            font-size: 32px;
+            font-weight: 600;
+            color: rgb(216, 134, 40);
+        }
+        
+        .caption {
+            font-size: 12px;
+            font-style: italic;
+        }
+
+        .fillertext:empty::after {
+            content: "Click to load content...";
+            font-family: monospace;
+            background-color: black;
+            color: #00ff00;
+            border-radius: 8px;
+            padding: 8px;
+        }
+
+        .fillertext {
+            max-width: 50%;
+        }
+
+        /* Code Credit: https://stackoverflow.com/a/16771693 */
+        .image {
+            width: 128px;
+            height: 128px;
+            -webkit-animation:spin 5s linear infinite;
+            -moz-animation:spin 5s linear infinite;
+            animation:spin 5s linear infinite;
+        }
+        @-moz-keyframes spin { 
+            100% { -moz-transform: rotate(360deg); } 
+        }
+        @-webkit-keyframes spin { 
+            100% { -webkit-transform: rotate(360deg); } 
+        }
+        @keyframes spin { 
+            100% { 
+                -webkit-transform: rotate(360deg); 
+                transform:rotate(360deg); 
+            } 
+        }
+        /* End of borrowed code */
+    </style>
+</head>
+<body>
+    <div class="heading">The Rust Programming Language</div>
+    <img width="128" height="128" src="https://upload.wikimedia.org/wikipedia/commons/d/d5/Rust_programming_language_black_logo.svg" id="rustlogo" alt="The Rust Programming Language logo.">
+    <div class="caption">The Rust logo. Click to animate.</div>
+    <button id="changepagestyle">Change page style</button>
+    <br><br>
+    <div id="descmain" class="fillertext"></div>
+    <div id="placecrab"></div>
+    <script>
+        var egg = 0;
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        $("#rustlogo").click(function(){
+            if ($("#rustlogo").hasClass("image")) { // JQuery CSS
+                $("#rustlogo").removeClass("image")
+                egg += 1
+                if (egg == 8) {
+                    $("#placecrab").html("<br><br>You've unlocked Ferris! [click to summon]<br>").click(function(){ // JQuery chaining (anonymous function nesting)
+                        $("#placecrab").append("<img src=\"https://upload.wikimedia.org/wikipedia/commons/2/20/Rustacean-orig-noshadow.svg\" alt=\"Ferris\" height=\"128\">")
+                    })
+                }
+            } else {$("#rustlogo").addClass("image")}
+        })
+        $("#changepagestyle").click(function(){
+            $("body").css("background-color","#252525").css("color","#ffffff") // JQuery chaining(?) and CSS
+            $(".heading").css("color","#00ff00")
+            $("#rustlogo").css("border-radius","50%").css("background-color","white")
+            $("#changepagestyle").fadeOut() // JQuery animations
+        })
+        $("#descmain").click(async function(){
+            var desc = "Rust is a low level systems programing language that is designed to be memory safe. Although it does operate at a low level (which implies more complexity), it is a quite friendly language for intermediate programmers. It has an extremely helpful compiler, Cargo, that will basically give you amazing explanations for any mistakes you could be making and how to correct them. Being a compiled language, Rust is also extremely fast. It is far less common to have memory leaks in Rust compared to other languages such as C and C++. The syntax of rust also makes for neat code.<br><br>Rust has a convenient ecosystem of packages that you can find on <a href=\"https://crates.io/\">crates.io</a>. Finally, you can download Rust itself at <a href=\"https://www.rust-lang.org/\">rust-lang.org</a>."
+            var port = "";
+            for (let i = 0; i < desc.length; i++) {
+                port = port + desc.charAt(i)
+                $("#descmain").html(port) // JQuery modifying HTML
+                await sleep(2)
+            }
+        })
+    </script>
+</body>
+</html>
