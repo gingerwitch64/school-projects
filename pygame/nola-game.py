@@ -14,10 +14,7 @@ wall_e = pygame.transform.scale(pygame.image.load("./wall-e.png").convert_alpha(
 wall_e_aha = pygame.transform.flip(pygame.transform.scale(pygame.image.load("./wall-e-aha.png").convert_alpha(), (wallewidth,walleheight)),True,False)
 walleX,walleY = 300,300
 velox = 0
-xbounds = {
-    "min":(wallewidth/2),
-    "max":display_width-(wallewidth/2)
-}
+xbounds = { "min":(wallewidth/2), "max":display_width-(wallewidth/2) }
 
 active = True
 while active:
