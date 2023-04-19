@@ -1,3 +1,4 @@
+import math
 import pygame
 from pygame.locals import *
 pygame.init()
@@ -10,8 +11,8 @@ def clamp(num, min_value, max_value):
 
 wallewidth,walleheight = 200,250
 bg = pygame.transform.scale(pygame.image.load("./getty-lab.jpg").convert(), (800,600))
-wall_e = pygame.transform.scale(pygame.image.load("./wall-e.png").convert_alpha(), (wallewidth,walleheight))
-wall_e_aha = pygame.transform.flip(pygame.transform.scale(pygame.image.load("./wall-e-aha.png").convert_alpha(), (wallewidth,walleheight)),True,False)
+wall_e = pygame.transform.flip(pygame.transform.scale(pygame.image.load("./wall-e.png").convert_alpha(), (wallewidth,walleheight)),True,False)
+wall_e_aha = pygame.transform.scale(pygame.image.load("./wall-e-aha.png").convert_alpha(), (wallewidth,walleheight))
 walleX,walleY = 300,300
 velox = 0
 xbounds = { "min":(wallewidth/2), "max":display_width-(wallewidth/2) }
@@ -49,8 +50,11 @@ while active:
     
     if pressedKey[K_SPACE]:
         walle_player = wall_e_aha
+    mouseX,mouseY = pygame.mouse.get_pos()
+    deg = abs((math.atan2((mouseY - walleY), (mouseX - walleX)) * (180/math.pi)) - 180)
+    walle_player = pygame.transform.rotate(walle_player, deg)
     disp.blit(bg, (0,0)) # Background
-    disp.blit(walle_player, (support_rect.x,support_rect.y))
+    disp.blit(walle_player, (support_rect.x,support_rect.y)) # Sprite
     pygame.display.update()
 pygame.display.quit()
 pygame.quit()
