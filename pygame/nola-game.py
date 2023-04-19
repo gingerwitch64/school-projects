@@ -12,16 +12,19 @@ wallewidth,walleheight = 200,250
 bg = pygame.transform.scale(pygame.image.load("./getty-lab.jpg").convert(), (800,600))
 wall_e = pygame.transform.scale(pygame.image.load("./wall-e.png").convert_alpha(), (wallewidth,walleheight))
 wall_e_aha = pygame.transform.flip(pygame.transform.scale(pygame.image.load("./wall-e-aha.png").convert_alpha(), (wallewidth,walleheight)),True,False)
-
-walleX=300
-walleY=300
-velox=0
+walleX,walleY = 300,300
+velox = 0
+xbounds = {
+    "min":(wallewidth/2),
+    "max":display_width-(wallewidth/2)
+}
 
 active = True
 while active:
+    walle_player = wall_e
+    support_rect = walle_player.get_rect(center=(walleX,walleY))
     velox = clamp(velox, -2, 2)
     walleX += velox
-    walle_player = wall_e
     # Quit checker
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -34,7 +37,7 @@ while active:
         velox +=.05
     else:
         rinc = .2 # "Return to normal" increment
-        if abs(velox) < .2 or clamp(walleX,0,display_width-wallewidth) == 0 or clamp(walleX,0,display_width-wallewidth) == display_width-wallewidth:
+        if abs(velox) < .2 or clamp(walleX,xbounds["min"],xbounds["max"]) == xbounds["min"] or clamp(walleX,xbounds["min"],xbounds["max"]) == xbounds["max"]:
             velox = 0
         elif velox < 0:
             velox += rinc
@@ -42,15 +45,15 @@ while active:
             velox -= rinc
 
     # Make sure [the robot] is not out of bounds
-    if clamp(walleX,0,display_width-wallewidth) == 0:
-        walleX = 0
-    if clamp(walleX,0,display_width-wallewidth) == display_width-wallewidth:
-        walleX = display_width-wallewidth
+    if clamp(walleX,xbounds["min"],xbounds["max"]) == xbounds["min"]:
+        walleX = xbounds["min"]
+    if clamp(walleX,xbounds["min"],xbounds["max"]) == xbounds["max"]:
+        walleX = xbounds["max"]
     
     if pressedKey[K_SPACE]:
         walle_player = wall_e_aha
     disp.blit(bg, (0,0)) # Background
-    disp.blit(walle_player, (walleX,walleY))
+    disp.blit(walle_player, (support_rect.x,support_rect.y))
     pygame.display.update()
 pygame.display.quit()
 pygame.quit()
