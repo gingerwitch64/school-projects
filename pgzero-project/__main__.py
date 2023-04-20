@@ -16,7 +16,6 @@ inithp = hp
 gravity = 2
 asteroids = []
 
-
 laser = Actor("lasercannon.png")
 laser.angle = 90
 
