@@ -9,6 +9,7 @@ pygame.display.set_caption("Z")
 
 BLACK = (0,0,0)
 DARKGR = (25,25,25)
+LIGHTGR = (150,150,150)
 WHITE = (255,255,255)
 
 def clamp(num, min_value, max_value):
@@ -61,6 +62,6 @@ while active:
     if rotation >= 360:
         rotation = 0
     pygame.draw.rect(display,DARKGR,(0,0,display_width,display_height))
-    pygame.draw.polygon(display,WHITE,rotatePolygon(rotating_square_points, rotation))
+    pygame.draw.polygon(display,LIGHTGR,rotatePolygon(rotating_square_points, rotation))
     pygame.display.update()
     
