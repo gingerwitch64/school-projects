@@ -23,7 +23,7 @@ active = True
 entities = []
 
 last_time = time.time()
-pygame.mouse.set_cursor((8,8),(0,0),(0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0))
+pygame.mouse.set_cursor((8,8),(0,0),(0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0)) # Credit to Rockybilly via stackoverflow: https://stackoverflow.com/a/40628090/16863801
 
 
 while active:
