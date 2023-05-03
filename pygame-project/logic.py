@@ -19,7 +19,7 @@ class Bounds:
 class Window:
     x = 0
     y = 0
-    surface = 0
+    surface = None
 
     def __init__(self, x, y, surface) -> None:
         self.x = x
