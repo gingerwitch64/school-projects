@@ -9,7 +9,7 @@ display.surface = pygame.display.set_mode((display.x,display.y))
 pygame.display.set_caption("ZGSClone")
 framerate = 60
 
-TRANS = (0,)*4 # 4th value is alpha
+TRANS = (0,)*4
 BLACK = (0,)*3
 DARKGR = (25,)*3
 LIGHTGR = (150,)*3
@@ -64,5 +64,6 @@ while active:
     
     pygame.draw.rect(display.surface,MISPRP,(0,0,display.x,display.y))
     pygame.Surface.blit(display.surface,thermal_bg,(-view.x,-view.y))
+    pygame.draw.rect(display.surface,TRANS,)
     pygame.display.update()
     clock.tick(framerate)
