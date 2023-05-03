@@ -9,13 +9,6 @@ display.surface = pygame.display.set_mode((display.x,display.y))
 pygame.display.set_caption("ZGSClone")
 framerate = 60
 
-TRANS = (0,)*4
-BLACK = (0,)*3
-DARKGR = (25,)*3
-LIGHTGR = (150,)*3
-WHITE = (255,)*3
-MISPRP = (255,1,255)
-
 thermal_bg = pygame.image.load(f"{relpath}/assets/img/thermal-topdown.png") # Need to check windows compatability.
 
 view = Coord(0,0)
