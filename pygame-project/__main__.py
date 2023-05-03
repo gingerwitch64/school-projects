@@ -26,6 +26,7 @@ while active:
         if event.type == pygame.QUIT:
             active = False
     
+    mousex,mousey = pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1]
     pressedKeys = pygame.key.get_pressed()
     if pressedKeys[K_ESCAPE]:
         active = False
@@ -57,6 +58,6 @@ while active:
     
     pygame.draw.rect(display.surface,MISPRP,(0,0,display.x,display.y))
     pygame.Surface.blit(display.surface,thermal_bg,(-view.x,-view.y))
-    pygame.draw.rect(display.surface,TRANS,)
+    pygame.draw.rect(display.surface,TRANS,pygame.Rect(mousex-40,mousey-20,80,40),2)
     pygame.display.update()
     clock.tick(framerate)
