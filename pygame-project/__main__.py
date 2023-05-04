@@ -9,7 +9,7 @@ display.surface = pygame.display.set_mode((display.x,display.y))
 pygame.display.set_caption("ZGSClone")
 framerate = 60
 
-thermal_bg = pygame.image.load(f"{relpath}/assets/img/thermal_topdown.png") # Need to check windows compatability.
+thermal_bg = pygame.transform.scale(pygame.image.load(f"{relpath}/assets/img/thermal_topdown.png"),(1366,768)) # Need to check windows compatability.
 
 view = Coord(0,0)
 viewspeed = 5
@@ -39,7 +39,7 @@ while active:
     if pressedKeys[K_DOWN]:
         view.y += viewspeed
     if pressedKeys[K_d]: # Debug - get current coords (plan to add other info as well)
-        print(view.x,view.y,dt)
+        print("\nView Coords:",(view.x,view.y),"\nMouse Pos (screen):",pygame.mouse.get_pos(),"\nMouse Pos (rel):",(view.x+mousex,view.y+mousey),"\nDelta Time:",dt,pygame.display.get_surface().get_size())
     if pressedKeys[K_g]: # Goto coords
         goto = input("Input coords exactly as (excluding the quotation marks) \"x,y\":")
         goto = goto.split(",")
