@@ -26,6 +26,13 @@ class Window:
         self.y = y
         self.surface = surface
 
+class Undead:
+    x = 0
+    y = 0
+    state = None
+    path = []
+
+
 def clamp(num, min_value, max_value):
     return max(min(num, max_value), min_value)
 
@@ -34,3 +41,7 @@ DARKGR = (25,)*3
 LIGHTGR = (150,)*3
 WHITE = (255,)*3
 MISPRP = (255,1,255)
+
+SPAWN = "rising"
+LIVING = "walk"
+DEAD = "fallen"
