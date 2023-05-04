@@ -1,6 +1,6 @@
 import pygame, time, pathlib
 from pygame.locals import *
-from logic import *
+from logic import * # For classes or constants that allow for ease of reading.
 relpath = pathlib.Path(__file__).parent.resolve() # This allows the game to be run from any directory and not have issues finding assets.
 clock = pygame.time.Clock()
 pygame.init()
@@ -53,11 +53,11 @@ while active:
             view.x = goto.x
             view.y = goto.y
 
-    view.x = clamp(view.x,0,thermal_bg.get_width()-display.x)
+    view.x = clamp(view.x,0,thermal_bg.get_width()-display.x) # Values clamped to min 0 as background is img drawn from top left
     view.y = clamp(view.y,0,thermal_bg.get_height()-display.y)
     
     pygame.draw.rect(display.surface,MISPRP,(0,0,display.x,display.y))
-    pygame.Surface.blit(display.surface,thermal_bg,(-view.x,-view.y))
+    pygame.Surface.blit(display.surface,thermal_bg,(-view.x,-view.y)) # Values are negative because to move the view right, you need to shift the background left.
     pygame.draw.rect(display.surface,WHITE,pygame.Rect(mousex-40,mousey-20,80,40),2)
     pygame.display.update()
     clock.tick(framerate)
