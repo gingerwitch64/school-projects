@@ -58,6 +58,6 @@ while active:
     
     pygame.draw.rect(display.surface,MISPRP,(0,0,display.x,display.y))
     pygame.Surface.blit(display.surface,thermal_bg,(-view.x,-view.y))
-    pygame.draw.rect(display.surface,TRANS,pygame.Rect(mousex-40,mousey-20,80,40),2)
+    pygame.draw.rect(display.surface,WHITE,pygame.Rect(mousex-40,mousey-20,80,40),2)
     pygame.display.update()
     clock.tick(framerate)

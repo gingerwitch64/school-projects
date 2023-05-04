@@ -29,7 +29,6 @@ class Window:
 def clamp(num, min_value, max_value):
     return max(min(num, max_value), min_value)
 
-TRANS = (0,)*4
 BLACK = (0,)*3
 DARKGR = (25,)*3
 LIGHTGR = (150,)*3
