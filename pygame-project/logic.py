@@ -1,4 +1,7 @@
 # This file is just for things like classes or functions that help make the structure of this project a bit more readable.
+# Remember, logic.py is to make things easier for developers, user.py is to make things easier for the end user.
+import user
+from user import DEFAULT
 
 class Coord:
     x = 0
@@ -35,6 +38,12 @@ class Undead:
 
 def clamp(num, min_value, max_value):
     return max(min(num, max_value), min_value)
+
+def checkUser(var,varname,fro):
+    if fro[varname] != (DEFAULT or 0 or var):
+        return fro[varname]
+    else:
+        return var
 
 BLACK = (0,)*3
 DARKGR = (25,)*3

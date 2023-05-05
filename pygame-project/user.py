@@ -1,0 +1,43 @@
+# A file meant to be modified by the user, for personal preferences or different workings of the program.
+
+DEFAULT = None
+
+preferences = {
+    "noborder": False, # If True, no system window control bar or other border will appear.
+    "window": (), # Specific (width,height) of the window. This will override the default if it contains 2 values.
+    "framerate": DEFAULT, # Frames per second target for the game.
+    "viewspeed": 10, # How fast the view moves.
+    "crosshairmulti": 1, # The size multiplier of the crosshair. Values < 1 will shrink, values > 1 will expand.
+    "crosshairrbg": DEFAULT, # (r,b,g) color value for the crosshair.
+}
+
+difficulty = {
+    "undead": {
+        "hp": 100,
+        "speed": 2,
+        "horde": 4,
+    },
+    "gunship": { # Gunship weapons. Note that a firerate of 0 indicates no shot-to-shot cooldown--fire as fast as you can click.
+        "autocannon": {
+            "dmg": 25,
+            "radius": 4,
+            "firerate": 200,
+            "overheat": 10,
+            "cooldown": 5,
+        },
+        "cannon": {
+            "dmg": 75,
+            "radius": 20,
+            "firerate": 0,
+            "rounds": 4,
+            "reload": 6,
+        },
+        "missile": {
+            "dmg": 150,
+            "radius": 50,
+            "firerate": 0,
+            "rounds": 1,
+            "reload": 10,
+        },
+    },
+}

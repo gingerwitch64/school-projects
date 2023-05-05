@@ -1,4 +1,4 @@
-import pygame, time, pathlib
+import user, pygame, time, pathlib
 from pygame.locals import *
 from logic import * # For classes or constants that allow for ease of reading.
 relpath = pathlib.Path(__file__).parent.resolve() # This allows the game to be run from any directory and not have issues finding assets.
@@ -8,15 +8,15 @@ display = Window(800,600,None)
 display.surface = pygame.display.set_mode((display.x,display.y))
 pygame.display.set_caption("ZGSClone")
 framerate = 60
-
-thermal_bg = pygame.transform.scale(pygame.image.load(f"{relpath}/assets/img/thermal_topdown.png"),(1366,768)) # Need to check windows compatability.
+thermal_bg = pygame.transform.scale(pygame.image.load(f"{relpath}/assets/img/thermal_topdown.png"),(1366,768))
 
 view = Coord(0,0)
 viewspeed = 5
+viewspeed = checkUser(viewspeed,f'{viewspeed=}'.split('=')[0],user.preferences)
 entities = []
 
 last_time = time.time()
-pygame.mouse.set_cursor((8,8),(0,0),(0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0)) # Credit to Rockybilly via stackoverflow: https://stackoverflow.com/a/40628090/16863801
+pygame.mouse.set_visible(False)
 
 active = True
 while active:
@@ -39,7 +39,7 @@ while active:
     if pressedKeys[K_DOWN]:
         view.y += viewspeed
     if pressedKeys[K_d]: # Debug - get current coords (plan to add other info as well)
-        print("\nView Coords:",(view.x,view.y),"\nMouse Pos (screen):",pygame.mouse.get_pos(),"\nMouse Pos (rel):",(view.x+mousex,view.y+mousey),"\nDelta Time:",dt,pygame.display.get_surface().get_size())
+        print("\nView Coords:",(view.x,view.y),"\nMouse Pos (screen):",pygame.mouse.get_pos(),"\nMouse Pos (rel):",(view.x+mousex,view.y+mousey),"\nDelta Time:",dt)
     if pressedKeys[K_g]: # Goto coords
         goto = input("Input coords exactly as (excluding the quotation marks) \"x,y\":")
         goto = goto.split(",")
