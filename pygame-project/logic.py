@@ -39,12 +39,6 @@ class Undead:
 def clamp(num, min_value, max_value):
     return max(min(num, max_value), min_value)
 
-def checkUser(var,varname,fro):
-    if fro[varname] != (DEFAULT or 0 or var):
-        return fro[varname]
-    else:
-        return var
-
 BLACK = (0,)*3
 DARKGR = (25,)*3
 LIGHTGR = (150,)*3

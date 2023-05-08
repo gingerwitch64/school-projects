@@ -12,7 +12,6 @@ thermal_bg = pygame.transform.scale(pygame.image.load(f"{relpath}/assets/img/the
 
 view = Coord(0,0)
 viewspeed = 5
-viewspeed = checkUser(viewspeed,f'{viewspeed=}'.split('=')[0],user.preferences)
 entities = []
 
 last_time = time.time()
@@ -52,6 +51,8 @@ while active:
             goto = Coord(int(goto[0]),int(goto[1]))
             view.x = goto.x
             view.y = goto.y
+    if pressedKeys[K_p]:
+        print("\n", user.preferences, "\n\n", user.difficulty, "\n")
 
     view.x = clamp(view.x,0,thermal_bg.get_width()-display.x) # Values clamped to min 0 as background is img drawn from top left
     view.y = clamp(view.y,0,thermal_bg.get_height()-display.y)
