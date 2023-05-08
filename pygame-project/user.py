@@ -19,7 +19,7 @@ difficulty = {
         "autocannon": {
             "dmg": 25,
             "radius": 4,
-            "firerate": 200,
+            "firerate": 0.03,
             "overheat": 10,
             "cooldown": 5,
         },

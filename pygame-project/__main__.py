@@ -4,7 +4,7 @@ from logic import * # For classes or constants that allow for ease of reading.
 relpath = pathlib.Path(__file__).parent.resolve() # This allows the game to be run from any directory and not have issues finding assets.
 clock = pygame.time.Clock()
 pygame.init()
-display = Window(800,600,None)
+display = Window(user.preferences["window"][0],user.preferences["window"][1],None) # Get the x and y dimensions from the tuple in the user preferences
 display.surface = pygame.display.set_mode((display.x,display.y))
 pygame.display.set_caption("ZGSClone")
 framerate = 60

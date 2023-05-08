@@ -31,8 +31,15 @@ class Undead:
     x = 0
     y = 0
     state = None
+    hp = 0
     path = []
 
+    def __init__(self, x, y, state, hp, path) -> None:
+        self.x = x
+        self.y = y
+        self.state = state
+        self.hp = hp
+        self.path = path
 
 def clamp(num, min_value, max_value):
     return max(min(num, max_value), min_value)
