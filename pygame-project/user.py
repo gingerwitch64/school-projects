@@ -1,7 +1,5 @@
 # A file meant to be modified by the user, for personal preferences or different workings of the program.
 
-DEFAULT = None
-
 preferences = {
     "noborder": False, # If True, no system window control bar or other border will appear.
     "window": (800,600), # Specific (width,height) of the window.

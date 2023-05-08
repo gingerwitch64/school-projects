@@ -1,7 +1,5 @@
 # This file is just for things like classes or functions that help make the structure of this project a bit more readable.
 # Remember, logic.py is to make things easier for developers, user.py is to make things easier for the end user.
-import user
-from user import DEFAULT
 
 class Coord:
     x = 0
