@@ -4,11 +4,11 @@ DEFAULT = None
 
 preferences = {
     "noborder": False, # If True, no system window control bar or other border will appear.
-    "window": (), # Specific (width,height) of the window. This will override the default if it contains 2 values.
-    "framerate": DEFAULT, # Frames per second target for the game.
-    "viewspeed": 10, # How fast the view moves.
+    "window": (800,600), # Specific (width,height) of the window.
+    "framerate": 60, # Frames per second target for the game.
+    "viewspeed": 5, # How fast the view moves.
     "crosshairmulti": 1, # The size multiplier of the crosshair. Values < 1 will shrink, values > 1 will expand.
-    "crosshairrbg": DEFAULT, # (r,b,g) color value for the crosshair.
+    "crosshairrbg": (255,255,255), # (r,b,g) color value for the crosshair.
 }
 
 difficulty = {
