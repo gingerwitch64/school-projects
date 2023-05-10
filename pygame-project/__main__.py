@@ -30,15 +30,15 @@ while active:
     if pressedKeys[K_ESCAPE]:
         active = False
     if pressedKeys[K_RIGHT]:
-        view.x += viewspeed
+        view.x += viewspeed*dt
     if pressedKeys[K_LEFT]:
-        view.x -= viewspeed
+        view.x -= viewspeed*dt
     if pressedKeys[K_UP]:
-        view.y -= viewspeed
+        view.y -= viewspeed*dt
     if pressedKeys[K_DOWN]:
-        view.y += viewspeed
+        view.y += viewspeed*dt
     if pressedKeys[K_d]: # Debug - get current coords (plan to add other info as well)
-        print("\nView Coords:",(view.x,view.y),"\nMouse Pos (screen):",pygame.mouse.get_pos(),"\nMouse Pos (rel):",(view.x+mousex,view.y+mousey),"\nDelta Time:",dt)
+        print("\nView Coords:",(round(view.x),round(view.y)),"\nMouse Pos (screen):",pygame.mouse.get_pos(),"\nMouse Pos (rel):",(round(view.x)+mousex,round(view.y)+mousey),"\nDelta Time:",round(dt,4))
     if pressedKeys[K_g]: # Goto coords
         goto = input("Input coords exactly as (excluding the quotation marks) \"x,y\":")
         goto = goto.split(",")
@@ -59,6 +59,6 @@ while active:
     
     pygame.draw.rect(display.surface,MISPRP,(0,0,display.x,display.y))
     pygame.Surface.blit(display.surface,thermal_bg,(-view.x,-view.y)) # Values are negative because to move the view right, you need to shift the background left.
-    pygame.draw.rect(display.surface,WHITE,pygame.Rect(mousex-40,mousey-20,80,40),2)
+    pygame.draw.rect(display.surface,WHITE,pygame.Rect(mousex-40*user.preferences["crosshairmulti"],mousey-20*user.preferences["crosshairmulti"],80*user.preferences["crosshairmulti"],40*user.preferences["crosshairmulti"]),2)
     pygame.display.update()
     clock.tick(framerate)
