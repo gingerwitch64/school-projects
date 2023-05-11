@@ -1,4 +1,5 @@
 import user, pygame, time, pathlib
+from random import randrange
 from pygame.locals import *
 from logic import * # For classes or constants that allow for ease of reading.
 relpath = pathlib.Path(__file__).parent.resolve() # This allows the game to be run from any directory and not have issues finding assets.
@@ -7,12 +8,17 @@ pygame.init()
 display = Window(user.preferences["window"][0],user.preferences["window"][1],None) # Get the x and y dimensions from the tuple in the user preferences
 display.surface = pygame.display.set_mode((display.x,display.y))
 pygame.display.set_caption("ZGSClone")
-framerate = 60
+framerate = user.preferences["framerate"]
 thermal_bg = pygame.transform.scale(pygame.image.load(f"{relpath}/assets/img/thermal_topdown.png"),(1366,768))
+undead_rising = pygame.image.load(f"{relpath}/assets/img/undead_rising.png")
+undead_walk_1 = pygame.image.load(f"{relpath}/assets/img/undead_walk_1.png")
+undead_walk_2 = pygame.image.load(f"{relpath}/assets/img/undead_walk_2.png")
+undead_fallen = pygame.image.load(f"{relpath}/assets/img/undead_fallen.png")
 
 view = Coord(0,0)
 viewspeed = 5
 entities = []
+entities.append(Undead(1111,642,undead_walk_1,randrange(0,20,1)/10,user.difficulty["undead"]["hp"],[(0,deviate([233],25))]))
 
 last_time = time.time()
 pygame.mouse.set_visible(False)
@@ -59,6 +65,11 @@ while active:
     
     pygame.draw.rect(display.surface,MISPRP,(0,0,display.x,display.y))
     pygame.Surface.blit(display.surface,thermal_bg,(-view.x,-view.y)) # Values are negative because to move the view right, you need to shift the background left.
+
+    for entity in entities:
+        if type(entity) is Undead:
+            pygame.Surface.blit(display.surface,entity.state,(entity.x-view.x,entity.y-view.y))
+
     pygame.draw.rect(display.surface,WHITE,pygame.Rect(mousex-40*user.preferences["crosshairmulti"],mousey-20*user.preferences["crosshairmulti"],80*user.preferences["crosshairmulti"],40*user.preferences["crosshairmulti"]),2)
     pygame.display.update()
     clock.tick(framerate)
