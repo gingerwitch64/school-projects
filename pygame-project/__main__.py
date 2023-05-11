@@ -19,7 +19,7 @@ pygame.mouse.set_visible(False)
 
 active = True
 while active:
-    dt = (time.time() - last_time) * framerate
+    dt = (time.time() - last_time) * 60
     last_time = time.time()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
