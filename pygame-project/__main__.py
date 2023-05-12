@@ -51,7 +51,7 @@ while active:
                             entity.state = undead_walk_1
                         elif tempdecider == 2:
                             entity.state = undead_walk_2
-                        else: entity.state = undead_walk_1
+                        else: print("Warning: Entity ", entity.index(), "is in an invalid state: ", entity.state)
     
     mousex,mousey = pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1]
     pressedKeys = pygame.key.get_pressed()
