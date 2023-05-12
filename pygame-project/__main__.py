@@ -15,12 +15,12 @@ undead_walk_1 = pygame.image.load(f"{relpath}/assets/img/undead_walk_1.png")
 undead_walk_2 = pygame.image.load(f"{relpath}/assets/img/undead_walk_2.png")
 undead_fallen = pygame.image.load(f"{relpath}/assets/img/undead_fallen.png")
 
-WALK = 750
+ANIMATE = 750
 weaponevent = pygame.USEREVENT + 1
-walkevent = pygame.USEREVENT + 2
+animationevent = pygame.USEREVENT + 2
 fallevent = pygame.USEREVENT + 3
 
-pygame.time.set_timer(walkevent,WALK)
+pygame.time.set_timer(animationevent,ANIMATE)
 
 view = Coord(0,0)
 viewspeed = 5
@@ -36,13 +36,19 @@ while active:
     last_time = time.time()
     for event in pygame.event.get():
         if event.type == pygame.QUIT: active = False
-        elif event.type == walkevent:
+        elif event.type == animationevent:
             for entity in entities:
                 if type(entity) == Undead:
                     if   entity.state == undead_walk_1: entity.state = undead_walk_2
                     elif entity.state == undead_walk_2: entity.state = undead_walk_1
-                    elif entity.state == undead_fallen: pass
-                    elif entity.state == undead_rising: entity.state = undead_walk_1
+                    elif entity.state == undead_fallen: entities.remove(entity.index())
+                    elif entity.state == undead_rising:
+                        tempdecider = randrange(1,2,1)
+                        if tempdecider == 1:
+                            entity.state = undead_walk_1
+                        elif tempdecider == 2:
+                            entity.state = undead_walk_2
+                        else: entity.state = undead_walk_1
     
     mousex,mousey = pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1]
     pressedKeys = pygame.key.get_pressed()
