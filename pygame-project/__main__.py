@@ -48,30 +48,22 @@ while active:
     pressedKeys = pygame.key.get_pressed()
     if pressedKeys[K_ESCAPE]:
         active = False
-    if pressedKeys[K_RIGHT]:
-        view.x += viewspeed*dt
-    if pressedKeys[K_LEFT]:
-        view.x -= viewspeed*dt
-    if pressedKeys[K_UP]:
-        view.y -= viewspeed*dt
-    if pressedKeys[K_DOWN]:
-        view.y += viewspeed*dt
+    if pressedKeys[K_RIGHT]: view.x += viewspeed*dt
+    if pressedKeys[K_LEFT]:  view.x -= viewspeed*dt
+    if pressedKeys[K_UP]:    view.y -= viewspeed*dt
+    if pressedKeys[K_DOWN]:  view.y += viewspeed*dt
     if pressedKeys[K_d]: # Debug - get current coords (plan to add other info as well)
         print("\nView Coords:",(round(view.x),round(view.y)),"\nMouse Pos (screen):",pygame.mouse.get_pos(),"\nMouse Pos (rel):",(round(view.x)+mousex,round(view.y)+mousey),"\nDelta Time:",round(dt,4))
     if pressedKeys[K_g]: # Goto coords
         goto = input("Input coords exactly as (excluding the quotation marks) \"x,y\":")
         goto = goto.split(",")
-        if goto == "":
-            print("Nothing specified; passing")
-            pass
-        elif len(goto) != 2:
-            print(f"{len(goto)} parameters specified: requires 2")
+        if goto == "":       print("Nothing specified; passing")
+        elif len(goto) != 2: print(f"{len(goto)} parameters specified: requires 2")
         else:
             goto = Coord(int(goto[0]),int(goto[1]))
             view.x = goto.x
             view.y = goto.y
-    if pressedKeys[K_p]:
-        print("\n", user.preferences, "\n\n", user.difficulty, "\n")
+    if pressedKeys[K_p]: print("\n", user.preferences, "\n\n", user.difficulty, "\n")
 
     view.x = clamp(view.x,0,thermal_bg.get_width()-display.x) # Values clamped to min 0 as background is img drawn from top left
     view.y = clamp(view.y,0,thermal_bg.get_height()-display.y)
