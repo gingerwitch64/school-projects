@@ -16,29 +16,10 @@ difficulty = {
         "wavetime": 10, # The time between waves in seconds.
         "minwavesize": 2, # Minimum zombies spawned per wave.
         "maxwavesize": 5, # Maximum zombies spawned per wave.
-        "horde": 4,
     },
-    "gunship": { # Gunship weapons. Note that a firerate of 0 indicates no shot-to-shot cooldown--fire as fast as you can click.
-        """"autocannon": {
-            "dmg": 25,
-            "radius": 4,
-            "firerate": 0.03,
-            "overheat": 10,
-            "cooldown": 5,
-        },
-        "cannon": {
-            "dmg": 75,
-            "radius": 20,
-            "firerate": 0,
-            "rounds": 4,
-            "reload": 6,
-        },
-        "missile": {
-            "dmg": 150,
-            "radius": 50,
-            "firerate": 0,
-            "rounds": 1,
-            "reload": 10,
-        },"""
+    "gunship": {
+        "firerate": 100, # The delay between shots fired in milliseconds.
+        "dmgradius": 10, # The damage radius in pixels of the weapon.
+        "dmg": 25, # The damage of the weapon.     
     },
 }
