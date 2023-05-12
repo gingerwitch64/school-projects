@@ -32,6 +32,8 @@ class Window:
 class Undead:
     x = 0
     y = 0
+    initx = x
+    inity = y
     state = None
     anoff = 0.0 # A (later) randomly generated offset for animation update times.
     hp = 0
@@ -40,6 +42,8 @@ class Undead:
     def __init__(self, x, y, state, anoff, hp, path):
         self.x = x
         self.y = y
+        self.initx = x
+        self.inity = y
         self.state = state
         self.anoff = anoff
         self.hp = hp
@@ -48,9 +52,11 @@ class Undead:
 def clamp(num, min_value, max_value):
     return max(min(num, max_value), min_value)
 
-def deviate(nums = list[int],dev = int) -> list[int] | int:
-    if len(nums) == 1:
+def deviate(nums = list[int] | int,dev = int) -> list[int] | int:
+    if type(nums) == list and len(nums) == 1:
         return randrange(nums[0]-dev,nums[0]+dev)
+    elif type(nums) == int:
+        return randrange(nums-dev,nums+dev)
     returnlist = []
     for num in nums:
         returnlist.append(randrange(num-dev,num+dev))

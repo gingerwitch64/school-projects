@@ -16,19 +16,26 @@ undead_walk_2 = pygame.image.load(f"{relpath}/assets/img/undead_walk_2.png")
 undead_fallen = pygame.image.load(f"{relpath}/assets/img/undead_fallen.png")
 
 ANIMATE = 750
-STATUS = 10
+STATUS = 50
+RISETIME = 1500
+WAVE = user.difficulty["undead"]["wavetime"]*1000
 # Gunship/Player events will always have an odd offset, while background/status/undead events will always have an even offset.
 # This will make the addition of new kinds of events and in turn new mechanics much simpler.
 weaponevent = pygame.USEREVENT + 1
 animationevent = pygame.USEREVENT + 2
 statusevent = pygame.USEREVENT + 4
+waveevent = pygame.USEREVENT + 6
+riseevent = pygame.USEREVENT + 8
 
 pygame.time.set_timer(animationevent,ANIMATE)
+pygame.time.set_timer(statusevent,STATUS)
+pygame.time.set_timer(waveevent,WAVE)
+pygame.time.set_timer(riseevent,RISETIME)
 
 view = Coord(0,0)
 viewspeed = 5
 entities = []
-entities.append(Undead(1111,642,undead_walk_1,randrange(0,20,1)/10,user.difficulty["undead"]["hp"],[(0,deviate([233],25))]))
+entities.append(Undead(1111,642,undead_walk_1,randrange(0,20,1)/10,user.difficulty["undead"]["hp"],[(5,deviate([233],10))]))
 
 last_time = time.time()
 pygame.mouse.set_visible(False)
@@ -44,14 +51,46 @@ while active:
                 if type(entity) == Undead:
                     if   entity.state == undead_walk_1: entity.state = undead_walk_2
                     elif entity.state == undead_walk_2: entity.state = undead_walk_1
-                    elif entity.state == undead_fallen: entities.remove(entity.index())
-                    elif entity.state == undead_rising:
+                    elif entity.state == undead_fallen: entities.remove(entity)
+                    elif entity.state == undead_rising: pass
+                        #tempdecider = randrange(1,2,1)
+                        #if tempdecider == 1:
+                        #    entity.state = undead_walk_1
+                        #elif tempdecider == 2:
+                        #    entity.state = undead_walk_2
+                        #else: print("Warning: Entity ", entity.index(), "is in an invalid state: ", entity.state)
+        elif event.type == riseevent:
+            for entity in entities:
+                if type(entity) == Undead:
+                    if entity.state == undead_rising:
                         tempdecider = randrange(1,2,1)
                         if tempdecider == 1:
                             entity.state = undead_walk_1
                         elif tempdecider == 2:
                             entity.state = undead_walk_2
                         else: print("Warning: Entity ", entity.index(), "is in an invalid state: ", entity.state)
+        elif event.type == statusevent:
+            for entity in entities:
+                if (type(entity) == Undead) and (entity.state != undead_rising):
+                    if entity.x <= 0:
+                        entities.remove(entity)
+                    destination = Coord(entity.path[len(entity.path)-1][0],entity.path[len(entity.path)-1][1])
+                    entity.x -= user.difficulty["undead"]["speed"]
+                    slope = (entity.inity-destination.y)/(entity.initx-destination.x)
+                    entity.y = (slope*(entity.x-destination.x))+destination.y
+        elif event.type == waveevent:
+            i = 0
+            wavesize = randrange(user.difficulty["undead"]["minwavesize"],user.difficulty["undead"]["maxwavesize"])
+            while i < wavesize:
+                entities.append(Undead(
+                    deviate(1100,50), deviate(650,50),
+                    undead_rising, randrange(0,20,1)/10,
+                    user.difficulty["undead"]["hp"],
+                    [(5,deviate([233],10))]
+                ))
+                i += 1
+    
+    mousex,mousey = pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1]
     
     mousex,mousey = pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1]
     pressedKeys = pygame.key.get_pressed()
@@ -72,7 +111,7 @@ while active:
             goto = Coord(int(goto[0]),int(goto[1]))
             view.x = goto.x
             view.y = goto.y
-    if pressedKeys[K_p]: print("\n", user.preferences, "\n\n", user.difficulty, "\n")
+    if pressedKeys[K_p]: print("\n", entities, "\n")
 
     view.x = clamp(view.x,0,thermal_bg.get_width()-display.x) # Values clamped to min 0 as background is img drawn from top left
     view.y = clamp(view.y,0,thermal_bg.get_height()-display.y)

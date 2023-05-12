@@ -2,7 +2,7 @@
 
 preferences = {
     "noborder": False, # If True, no system window control bar or other border will appear.
-    "window": (800,600), # Specific (width,height) of the window.
+    "window": (1366,768),#(800,600), # Specific (width,height) of the window.
     "framerate": 60, # Frames per second target for the game.
     "viewspeed": 5, # How fast the view moves.
     "crosshairmulti": 1, # The size multiplier of the crosshair. Values < 1 will shrink, values > 1 will expand.
@@ -12,7 +12,10 @@ preferences = {
 difficulty = {
     "undead": {
         "hp": 100,
-        "speed": 2,
+        "speed": 1,
+        "wavetime": 10, # The time between waves in seconds.
+        "minwavesize": 2, # Minimum zombies spawned per wave.
+        "maxwavesize": 5, # Maximum zombies spawned per wave.
         "horde": 4,
     },
     "gunship": { # Gunship weapons. Note that a firerate of 0 indicates no shot-to-shot cooldown--fire as fast as you can click.
