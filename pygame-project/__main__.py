@@ -16,9 +16,12 @@ undead_walk_2 = pygame.image.load(f"{relpath}/assets/img/undead_walk_2.png")
 undead_fallen = pygame.image.load(f"{relpath}/assets/img/undead_fallen.png")
 
 ANIMATE = 750
+STATUS = 10
+# Gunship/Player events will always have an odd offset, while background/status/undead events will always have an even offset.
+# This will make the addition of new kinds of events and in turn new mechanics much simpler.
 weaponevent = pygame.USEREVENT + 1
 animationevent = pygame.USEREVENT + 2
-fallevent = pygame.USEREVENT + 3
+statusevent = pygame.USEREVENT + 4
 
 pygame.time.set_timer(animationevent,ANIMATE)
 
