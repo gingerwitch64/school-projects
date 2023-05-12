@@ -68,7 +68,6 @@ while active:
                             entity.state = undead_walk_1
                         elif tempdecider == 2:
                             entity.state = undead_walk_2
-                        else: print("Warning: Entity ", entity.index(), "is in an invalid state: ", entity.state)
         elif event.type == statusevent:
             for entity in entities:
                 if (type(entity) == Undead) and (entity.state != undead_rising):
