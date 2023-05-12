@@ -24,14 +24,14 @@ while active:
     for event in pygame.event.get():
         if event.type == pygame.QUIT: active = False
     pressedKeys = pygame.key.get_pressed()
-    if pressedKeys[K_RIGHT]:    square_x+=speed
-    if pressedKeys[K_LEFT]:     square_x-=speed
-    if pressedKeys[K_UP]:       square_y-=speed
-    if pressedKeys[K_DOWN]:     square_y+=speed
-    if pressedKeys[K_d]:    circle_x+=speed
-    if pressedKeys[K_a]:    circle_x-=speed
-    if pressedKeys[K_w]:    circle_y-=speed
-    if pressedKeys[K_s]:    circle_y+=speed
+    if pressedKeys[K_RIGHT]:    square_x+=speed*dt
+    if pressedKeys[K_LEFT]:     square_x-=speed*dt
+    if pressedKeys[K_UP]:       square_y-=speed*dt
+    if pressedKeys[K_DOWN]:     square_y+=speed*dt
+    if pressedKeys[K_d]:    circle_x+=speed*dt
+    if pressedKeys[K_a]:    circle_x-=speed*dt
+    if pressedKeys[K_w]:    circle_y-=speed*dt
+    if pressedKeys[K_s]:    circle_y+=speed*dt
     
     if circle_x > display_width: circle_x = 0
     if circle_x < 0: circle_x = display_width
