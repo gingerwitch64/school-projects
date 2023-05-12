@@ -16,7 +16,7 @@ difficulty = {
         "horde": 4,
     },
     "gunship": { # Gunship weapons. Note that a firerate of 0 indicates no shot-to-shot cooldown--fire as fast as you can click.
-        "autocannon": {
+        """"autocannon": {
             "dmg": 25,
             "radius": 4,
             "firerate": 0.03,
@@ -36,6 +36,6 @@ difficulty = {
             "firerate": 0,
             "rounds": 1,
             "reload": 10,
-        },
+        },"""
     },
 }
