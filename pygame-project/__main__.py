@@ -70,13 +70,19 @@ while active:
                             entity.state = undead_walk_2
         elif event.type == statusevent:
             for entity in entities:
-                if (type(entity) == Undead) and (entity.state != undead_rising):
-                    if entity.x <= 0:
+                if type(entity) == Undead:
+                    if entity.hp <= 0:
+                        entity.state = undead_fallen
+                    if entity.state == undead_rising: pass
+                    elif entity.state == undead_fallen:
                         entities.remove(entity)
-                    destination = Coord(entity.path[len(entity.path)-1][0],entity.path[len(entity.path)-1][1])
-                    entity.x -= user.difficulty["undead"]["speed"]
-                    slope = (entity.inity-destination.y)/(entity.initx-destination.x)
-                    entity.y = (slope*(entity.x-destination.x))+destination.y
+                    elif entity.state == undead_walk_1 or entity.state == undead_walk_2:
+                        if entity.x <= 0:
+                            entities.remove(entity)
+                        destination = Coord(entity.path[len(entity.path)-1][0],entity.path[len(entity.path)-1][1])
+                        entity.x -= user.difficulty["undead"]["speed"]
+                        slope = (entity.inity-destination.y)/(entity.initx-destination.x)
+                        entity.y = (slope*(entity.x-destination.x))+destination.y
         elif event.type == waveevent:
             i = 0
             wavesize = randrange(user.difficulty["undead"]["minwavesize"],user.difficulty["undead"]["maxwavesize"])
