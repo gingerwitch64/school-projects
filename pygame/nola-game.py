@@ -20,7 +20,6 @@ xbounds = { "min":(wallewidth/2), "max":display_width-(wallewidth/2) }
 active = True
 while active:
     walle_player = wall_e
-    support_rect = walle_player.get_rect(center=(walleX,walleY))
     velox = clamp(velox, -2, 2)
     walleX += velox
     # Quit checker
@@ -53,6 +52,7 @@ while active:
     mouseX,mouseY = pygame.mouse.get_pos()
     deg = abs((math.atan2((mouseY - walleY), (mouseX - walleX)) * (180/math.pi)) - 180)
     walle_player = pygame.transform.rotate(walle_player, deg)
+    support_rect = walle_player.get_rect(center=(walleX,walleY))
     disp.blit(bg, (0,0)) # Background
     disp.blit(walle_player, (support_rect.x,support_rect.y)) # Sprite
     pygame.display.update()
