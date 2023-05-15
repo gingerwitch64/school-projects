@@ -1,9 +1,9 @@
-import user, pygame, time, pathlib
-from random import randrange
+import user, pygame, time, pathlib  # Note that "user" is a custom python library for storing user preferences.
+from random import randrange    # Using this as apparently it's better than randint() in that it fixes an annoyance.
 from pygame.locals import *
-from logic import * # For classes or constants that allow for ease of reading.
-relpath = pathlib.Path(__file__).parent.resolve() # This allows the game to be run from any directory and not have issues finding assets.
-clock = pygame.time.Clock()
+from logic import *             # Imports custom classes and constants that allow for ease of reading and code writing.
+relpath = pathlib.Path(__file__).parent.resolve()   # This allows the game to be run from any directory and not have issues finding assets.
+clock = pygame.time.Clock()     # Used for framerate purposes. See EOF.
 pygame.init()
 display = Window(user.preferences["window"][0],user.preferences["window"][1],None) # Get the x and y dimensions from the tuple in the user preferences
 display.surface = pygame.display.set_mode((display.x,display.y))
@@ -15,26 +15,27 @@ undead_walk_1 = pygame.image.load(f"{relpath}/assets/img/undead_walk_1.png")
 undead_walk_2 = pygame.image.load(f"{relpath}/assets/img/undead_walk_2.png")
 undead_fallen = pygame.image.load(f"{relpath}/assets/img/undead_fallen.png")
 
-ANIMATE = 750
-STATUS = 50
+ANIMATE = 750   # These are the event cooldowns in milliseconds.
+STATUS = 50     # Status checks to see if undead are dead or alive, and if the latter, moves them.
 RISETIME = 1500
-WAVE = user.difficulty["undead"]["wavetime"]*1000
-# Gunship/Player events will always have an odd offset, while background/status/undead events will always have an even offset.
-# This will make the addition of new kinds of events and in turn new mechanics much simpler.
-weaponevent = pygame.USEREVENT + 1
-animationevent = pygame.USEREVENT + 2
-statusevent = pygame.USEREVENT + 4
+WAVE = user.difficulty["undead"]["wavetime"]*1000   # The time between waves spawned.
+
+weaponevent = pygame.USEREVENT + 1      # Gunship/Player events will always have an odd offset,
+animationevent = pygame.USEREVENT + 2   # while background/status/undead events will always have an even offset.
+statusevent = pygame.USEREVENT + 4      # This will make the addition of new kinds of events (and in turn new mechanics) much simpler.
 waveevent = pygame.USEREVENT + 6
 riseevent = pygame.USEREVENT + 8
 
-pygame.time.set_timer(animationevent,ANIMATE)
-pygame.time.set_timer(statusevent,STATUS)
+pygame.time.set_timer(animationevent,ANIMATE)   # Here are the actual events.
+pygame.time.set_timer(statusevent,STATUS)       # They run infinitely every so and so milliseconds (the constants from earlier).
 pygame.time.set_timer(waveevent,WAVE)
 pygame.time.set_timer(riseevent,RISETIME)
 
 view = Coord(0,0)
-viewspeed = 5
+viewspeed = user.preferences["viewspeed"]   # Note that this value is fetched from user.py
 entities = []
+
+# This is the first undead. Although I used this guy for testing purposes, I think I'll keep him here because there's not much use in removing him.
 entities.append(Undead(1111,642,undead_walk_1,randrange(0,20,1)/10,user.difficulty["undead"]["hp"],[(5,deviate([233],10))]))
 
 last_time = time.time()
@@ -42,66 +43,56 @@ pygame.mouse.set_visible(False)
 
 active = True
 while active:
-    dt = (time.time() - last_time) * 60
-    last_time = time.time()
-    for event in pygame.event.get():
+    dt = (time.time() - last_time) * 60 # These two lines allow for "framerate independence",
+    last_time = time.time()             # meaning that the game will act the same way even with lag.
+    for event in pygame.event.get():    # These next lines may look complex, but they're just tedious.
         if event.type == pygame.QUIT: active = False
         elif event.type == animationevent:
             for entity in entities:
-                if type(entity) == Undead:
-                    if   entity.state == undead_walk_1: entity.state = undead_walk_2
+                if type(entity) == Undead: # These type = Undead statements allow for class attribute recognition in editors such as Visual Studio Code.
+                    if   entity.state == undead_walk_1: entity.state = undead_walk_2    # Obviously, here we're just moving from one frame to another.
                     elif entity.state == undead_walk_2: entity.state = undead_walk_1
-                    elif entity.state == undead_fallen: entities.remove(entity)
+                    elif entity.state == undead_fallen: entities.remove(entity)         # Removes fallen (dead) undead.
                     elif entity.state == undead_rising: pass
-                        #tempdecider = randrange(1,2,1)
-                        #if tempdecider == 1:
-                        #    entity.state = undead_walk_1
-                        #elif tempdecider == 2:
-                        #    entity.state = undead_walk_2
-                        #else: print("Warning: Entity ", entity.index(), "is in an invalid state: ", entity.state)
         elif event.type == riseevent:
             for entity in entities:
                 if type(entity) == Undead:
                     if entity.state == undead_rising:
-                        tempdecider = randrange(1,2,1)
-                        if tempdecider == 1:
+                        tempdecider = randrange(1,2,1)  # This is supposed to randomize the starting walking animation for undead,
+                        if tempdecider == 1:            # but I don't think it really works right now.
                             entity.state = undead_walk_1
                         elif tempdecider == 2:
                             entity.state = undead_walk_2
         elif event.type == statusevent:
             for entity in entities:
                 if type(entity) == Undead:
-                    if entity.hp <= 0:
+                    if entity.hp <= 0:      # Fells an undead if it's... dead.
                         entity.state = undead_fallen
-                    if entity.state == undead_rising: pass
-                    elif entity.state == undead_fallen:
-                        entities.remove(entity)
-                    elif entity.state == undead_walk_1 or entity.state == undead_walk_2:
-                        if entity.x <= 0:
+                    if entity.state == undead_walk_1 or entity.state == undead_walk_2:
+                        if entity.x <= 0:   # Removes an undead when it has reached the bounds.
                             entities.remove(entity)
                         destination = Coord(entity.path[len(entity.path)-1][0],entity.path[len(entity.path)-1][1])
                         entity.x -= user.difficulty["undead"]["speed"]
-                        slope = (entity.inity-destination.y)/(entity.initx-destination.x)
-                        entity.y = (slope*(entity.x-destination.x))+destination.y
+                        slope = (entity.inity-destination.y)/(entity.initx-destination.x)   # Unfortunately, as of right now, undead do not move across a line at a speed consistent relative to that line.
+                        entity.y = (slope*(entity.x-destination.x))+destination.y           # Their x is changed and their y is set depending on it.
         elif event.type == waveevent:
             i = 0
-            wavesize = randrange(user.difficulty["undead"]["minwavesize"],user.difficulty["undead"]["maxwavesize"])
+            wavesize = randrange(user.difficulty["undead"]["minwavesize"],user.difficulty["undead"]["maxwavesize"]) # Randomly determines wave size based on user.difficulty min and max
             while i < wavesize:
-                entities.append(Undead(
-                    deviate(1100,50), deviate(650,50),
-                    undead_rising, randrange(0,20,1)/10,
-                    user.difficulty["undead"]["hp"],
-                    [(5,deviate([233],10))]
+                entities.append(Undead(                     # Here is where the Undead() are created. It seems complex, but again, it's just tedious.
+                    deviate(1100,50), deviate(650,50),      # The deviate(a,b) function is from logic.py and randomly chooses a value between a-b and a+b.
+                    undead_rising, randrange(0,20,1)/10,    # State is set to risen (player has a bit of time to notice new undead), but that second variable (animation offset) is actually unused.
+                    user.difficulty["undead"]["hp"],        # Undead hit points are set here from user.difficulty, and
+                    [(5,deviate([233],10))]                 # these are the points of the path for the undead to travel. It is a list, but in reality I've only programmed them to use one point.
                 ))
-                i += 1
+                i += 1  # Repeat until satisfied.
     
-    mousex,mousey = pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1]
-    
-    mousex,mousey = pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1]
+    mousex,mousey = pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1] # Get mouse position. This is from before I set up a Coord class to store it in.
+
     pressedKeys = pygame.key.get_pressed()
-    if pressedKeys[K_ESCAPE]:
-        active = False
-    if pressedKeys[K_RIGHT]: view.x += viewspeed*dt
+    if pressedKeys[K_ESCAPE]:   # Escape is an alternative way of quitting the game,
+        active = False          # besides using the "X" presented on a window's title bar by most window managers.
+    if pressedKeys[K_RIGHT]: view.x += viewspeed*dt # Note that "dt" (delta time) is used here--this is what compensates for aforementioned lag.
     if pressedKeys[K_LEFT]:  view.x -= viewspeed*dt
     if pressedKeys[K_UP]:    view.y -= viewspeed*dt
     if pressedKeys[K_DOWN]:  view.y += viewspeed*dt
@@ -120,14 +111,17 @@ while active:
 
     view.x = clamp(view.x,0,thermal_bg.get_width()-display.x) # Values clamped to min 0 as background is img drawn from top left
     view.y = clamp(view.y,0,thermal_bg.get_height()-display.y)
-    
+
+    # Everything after this point is related to actually drawing images and other visuals.
+
     pygame.draw.rect(display.surface,MISPRP,(0,0,display.x,display.y))
     pygame.Surface.blit(display.surface,thermal_bg,(-view.x,-view.y)) # Values are negative because to move the view right, you need to shift the background left.
 
     for entity in entities:
         if type(entity) is Undead:
             pygame.Surface.blit(display.surface,entity.state,(entity.x-view.x,entity.y-view.y))
-
+    # This is the user's crosshair. Size can be modified in user.py
     pygame.draw.rect(display.surface,WHITE,pygame.Rect(mousex-40*user.preferences["crosshairmulti"],mousey-20*user.preferences["crosshairmulti"],80*user.preferences["crosshairmulti"],40*user.preferences["crosshairmulti"]),2)
-    pygame.display.update()
-    clock.tick(framerate)
+    
+    pygame.display.update() # Updates the entire display.
+    clock.tick(framerate)   # Runs program at a target framerate.
