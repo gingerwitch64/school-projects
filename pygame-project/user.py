@@ -23,3 +23,5 @@ difficulty = {
         "dmg": 25, # The damage of the weapon.     
     },
 }
+
+DEBUG = True
