@@ -81,6 +81,7 @@ while active:
                         if entity.x <= 0:   # Removes an undead when it has reached the bounds.
                             entities.remove(entity)
                             score -= 50
+                            basehp -= 1
                         destination = Coord(entity.path[len(entity.path)-1][0],entity.path[len(entity.path)-1][1])
                         entity.x -= user.difficulty["undead"]["speed"]
                         slope = (entity.inity-destination.y)/(entity.initx-destination.x)   # Unfortunately, as of right now, undead do not move across a line at a speed consistent relative to that line.
@@ -88,12 +89,13 @@ while active:
         elif event.type == waveevent:
             i = 0
             wavesize = randrange(user.difficulty["undead"]["minwavesize"]+waveinc,user.difficulty["undead"]["maxwavesize"]+waveinc) # Randomly determines wave size based on user.difficulty min, max and increase over time
+            waveinc += 1
             while i < wavesize:
                 entities.append(Undead(                     # Here is where the Undead() are created. It seems complex, but again, it's just tedious.
                     deviate(1100,90), deviate(650,90),      # The deviate(a,b) function is from logic.py and randomly chooses a value between a-b and a+b.
                     undead_rising, randrange(0,20,1)/10,    # State is set to risen (player has a bit of time to notice new undead), but that second variable (animation offset) is actually unused.
                     user.difficulty["undead"]["hp"],        # Undead hit points are set here from user.difficulty, and
-                    [(5,deviate([233],10))]                 # these are the points of the path for the undead to travel. It is a list, but in reality I've only programmed them to use one point.
+                    [(5,randrange(260,550))]                # these are the points of the path for the undead to travel. It is a list, but in reality I've only programmed them to use one point.
                 ))
                 i += 1  # Repeat until satisfied.
         elif event.type == weaponevent:
@@ -146,6 +148,13 @@ while active:
         if pressedKeys[K_p]:
             for i in range(len(entities)):
                 print(entities[i-1].hp)
+        if pressedKeys[K_u]:
+            entities.append(Undead(                     # Here is where the Undead() are created. It seems complex, but again, it's just tedious.
+                    deviate(1100,90), deviate(650,90),      # The deviate(a,b) function is from logic.py and randomly chooses a value between a-b and a+b.
+                    undead_rising, randrange(0,20,1)/10,    # State is set to risen (player has a bit of time to notice new undead), but that second variable (animation offset) is actually unused.
+                    user.difficulty["undead"]["hp"],        # Undead hit points are set here from user.difficulty, and
+                    [(5,deviate([233],100))]                # these are the points of the path for the undead to travel. It is a list, but in reality I've only programmed them to use one point.
+                ))
 
     view.x = clamp(view.x,0,thermal_bg.get_width()-display.x) # Values clamped to min 0 as background is img drawn from top left
     view.y = clamp(view.y,0,thermal_bg.get_height()-display.y)
