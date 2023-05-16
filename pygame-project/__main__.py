@@ -52,7 +52,7 @@ entities.append(Undead(1111,642,undead_walk_1,randrange(0,20,1)/10,user.difficul
 last_time = time.time()
 pygame.mouse.set_visible(False)
 
-mixer.Channel(0).play(pygame.mixer.Sound(f"{relpath}/assets/audio/darkforest.mp3"))
+mixer.Channel(0).play(pygame.mixer.Sound(f"{relpath}/assets/audio/darkforest.mp3"),-1)
 
 active = True
 game_over = False
