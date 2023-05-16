@@ -3,7 +3,7 @@ from logic import * # So that the user can use preset colors.
 
 preferences = {
     "noborder": False, # If True, no system window control bar or other border will appear.
-    "window": (1366,768),#(800,600),# Specific (width,height) of the window.
+    "window": (800,600), # Specific (width,height) of the window.
     "framerate": 60, # Frames per second target for the game.
     "viewspeed": 5, # How fast the view moves.
     "crosshair": {
@@ -19,7 +19,7 @@ difficulty = {
     "undead": {
         "hp": 100,
         "speed": 1,
-        "wavetime": 5,     # The time between waves in seconds.
+        "wavetime": 5,      # The time between waves in seconds.
         "minwavesize": 2,   # Minimum zombies spawned per wave.
         "maxwavesize": 5,   # Maximum zombies spawned per wave.
         "wavesizeinc": 5,   # By how much a wave's size can increase each round.
@@ -34,4 +34,4 @@ difficulty = {
     }
 }
 
-DEBUG = True
+DEBUG = False

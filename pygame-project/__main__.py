@@ -52,10 +52,15 @@ entities.append(Undead(1111,642,undead_walk_1,randrange(0,20,1)/10,user.difficul
 last_time = time.time()
 pygame.mouse.set_visible(False)
 
+mixer.Channel(0).play(pygame.mixer.Sound(f"{relpath}/assets/audio/darkforest.mp3"))
+
 active = True
-while active:
+game_over = False
+while active and not game_over:
     dt = (time.time() - last_time) * 60 # These two lines allow for "framerate independence",
     last_time = time.time()             # meaning that the game will act the same way even with lag.
+    if basehp <= 0:
+        game_over = True
     for event in pygame.event.get():    # These next lines may look complex, but they're just tedious.
         if event.type == pygame.QUIT: active = False
         elif event.type == animationevent:
@@ -82,8 +87,9 @@ while active:
                             entities.remove(entity)
                             score -= 50
                             basehp -= 1
+                            basehp = clamp(basehp,0,initbasehp)
                         destination = Coord(entity.path[len(entity.path)-1][0],entity.path[len(entity.path)-1][1])
-                        entity.x -= user.difficulty["undead"]["speed"]
+                        entity.x -= user.difficulty["undead"]["speed"]*dt
                         slope = (entity.inity-destination.y)/(entity.initx-destination.x)   # Unfortunately, as of right now, undead do not move across a line at a speed consistent relative to that line.
                         entity.y = (slope*(entity.x-destination.x))+destination.y           # Their x is changed and their y is set depending on it.
         elif event.type == waveevent:
@@ -108,10 +114,23 @@ while active:
     pressedMouse = pygame.mouse.get_pressed()
     if pressedKeys[K_ESCAPE]:   # Escape is an alternative way of quitting the game,
         active = False          # besides using the "X" presented on a window's title bar by most window managers.
-    if pressedKeys[K_d]: view.x += viewspeed*dt # Note that "dt" (delta time) is used here--this is what compensates for aforementioned lag.
-    if pressedKeys[K_a]: view.x -= viewspeed*dt
-    if pressedKeys[K_w]: view.y -= viewspeed*dt
-    if pressedKeys[K_s]: view.y += viewspeed*dt
+    if pressedKeys[K_d]:
+        view.x += viewspeed*dt # Note that "dt" (delta time) is used here--this is what compensates for aforementioned lag.
+        if clamp(view.x,0,thermal_bg.get_width()-display.x) == thermal_bg.get_width()-display.x:
+            pygame.mouse.set_pos((clamp(mousex+viewspeed*dt,0,display.x),mousey))
+    if pressedKeys[K_a]:
+        view.x -= viewspeed*dt
+        if clamp(view.x,0,thermal_bg.get_width()-display.x) == 0:
+            pygame.mouse.set_pos((clamp(mousex-viewspeed*dt,0,display.x),mousey))
+    if pressedKeys[K_w]:
+        view.y -= viewspeed*dt
+        if clamp(view.y,0,thermal_bg.get_height()-display.y) == 0:
+            pygame.mouse.set_pos((mousex,clamp(mousey-viewspeed*dt,0,display.y)))
+    if pressedKeys[K_s]:
+        view.y += viewspeed*dt
+        if clamp(view.y,0,thermal_bg.get_height()-display.y) == thermal_bg.get_height()-display.y:
+            pygame.mouse.set_pos((mousex,clamp(mousey+viewspeed*dt,0,display.y)))
+    if pressedKeys[K_r]: pygame.mouse.set_pos((display.x/2,display.y/2))
     if pressedKeys[K_SPACE]:
         if chambered == True:
             chambered = False
@@ -119,8 +138,8 @@ while active:
             mixer.music.play()
             pygame.time.set_timer(weaponevent,CHAMBER_TIME)
             hitrect = pygame.rect.Rect(
-                mousex-(user.difficulty["gunship"]["dmgwidth"]/2),
-                mousey-(user.difficulty["gunship"]["dmgwidth"]/2),
+                (mousex-(user.difficulty["gunship"]["dmgwidth"]/2))+view.x,
+                (mousey-(user.difficulty["gunship"]["dmgwidth"]/2))+view.y,
                 user.difficulty["gunship"]["dmgwidth"],
                 user.difficulty["gunship"]["dmgwidth"]
                 )
@@ -134,8 +153,8 @@ while active:
                                 entity.state = undead_fallen
 
     if user.DEBUG:
-        if pressedKeys[K_d]: # Debug - get current coords (plan to add other info as well)
-            print("\nView Coords:",(round(view.x),round(view.y)),"\nMouse Pos (screen):",pygame.mouse.get_pos(),"\nMouse Pos (rel):",(round(view.x)+mousex,round(view.y)+mousey),"\nDelta Time:",round(dt,4))
+        #if pressedKeys[K_d]: # Debug - get current coords (plan to add other info as well)
+            #print("\nView Coords:",(round(view.x),round(view.y)),"\nMouse Pos (screen):",pygame.mouse.get_pos(),"\nMouse Pos (rel):",(round(view.x)+mousex,round(view.y)+mousey),"\nDelta Time:",round(dt,4))
         if pressedKeys[K_g]: # Goto coords
             goto = input("Input coords exactly as (excluding the quotation marks) \"x,y\":")
             goto = goto.split(",")
@@ -149,11 +168,11 @@ while active:
             for i in range(len(entities)):
                 print(entities[i-1].hp)
         if pressedKeys[K_u]:
-            entities.append(Undead(                     # Here is where the Undead() are created. It seems complex, but again, it's just tedious.
-                    deviate(1100,90), deviate(650,90),      # The deviate(a,b) function is from logic.py and randomly chooses a value between a-b and a+b.
-                    undead_rising, randrange(0,20,1)/10,    # State is set to risen (player has a bit of time to notice new undead), but that second variable (animation offset) is actually unused.
-                    user.difficulty["undead"]["hp"],        # Undead hit points are set here from user.difficulty, and
-                    [(5,deviate([233],100))]                # these are the points of the path for the undead to travel. It is a list, but in reality I've only programmed them to use one point.
+            entities.append(Undead(
+                    deviate(1100,90), deviate(650,90),
+                    undead_rising, randrange(0,20,1)/10,
+                    user.difficulty["undead"]["hp"],
+                    [(5,deviate([233],100))]
                 ))
 
     view.x = clamp(view.x,0,thermal_bg.get_width()-display.x) # Values clamped to min 0 as background is img drawn from top left
@@ -195,3 +214,16 @@ while active:
 
     pygame.display.update() # Updates the entire display.
     clock.tick(framerate)   # Runs program at a target framerate.
+
+while game_over:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT: game_over = False
+    if pygame.key.get_pressed()[K_ESCAPE]:
+        game_over = False
+    pygame.draw.rect(display.surface,BLACK,pygame.rect.Rect(0,0,display.x,display.y))
+    display.surface.blit(
+        special_elite.render(f"Game Over. Your score was {score}.",True,WHITE),
+        (80,60)
+    )
+    pygame.display.update()
+    clock.tick(framerate)
