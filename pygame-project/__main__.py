@@ -1,10 +1,13 @@
 import user, pygame, time, pathlib  # Note that "user" is a custom python library for storing user preferences.
 from random import randrange    # Using this as apparently it's better than randint() in that it fixes an annoyance.
 from pygame.locals import *
+from pygame import mixer
 from logic import *             # Imports custom classes and constants that allow for ease of reading and code writing.
 relpath = pathlib.Path(__file__).parent.resolve()   # This allows the game to be run from any directory and not have issues finding assets.
 clock = pygame.time.Clock()     # Used for framerate purposes. See EOF.
 pygame.init()
+mixer.init()
+mixer.music.set_volume(user.preferences["volume"])
 display = Window(user.preferences["window"][0],user.preferences["window"][1],None) # Get the x and y dimensions from the tuple in the user preferences
 display.surface = pygame.display.set_mode((display.x,display.y))
 pygame.display.set_caption("ZGSClone")
@@ -15,6 +18,8 @@ undead_walk_1 = pygame.image.load(f"{relpath}/assets/img/undead_walk_1.png")
 undead_walk_2 = pygame.image.load(f"{relpath}/assets/img/undead_walk_2.png")
 undead_fallen = pygame.image.load(f"{relpath}/assets/img/undead_fallen.png")
 
+CHAMBER_TIME = user.difficulty["gunship"]["firerate"]
+chambered = True
 ANIMATE = 750   # These are the event cooldowns in milliseconds.
 STATUS = 50     # Status checks to see if undead are dead or alive, and if the latter, moves them.
 RISETIME = 1500
@@ -86,16 +91,37 @@ while active:
                     [(5,deviate([233],10))]                 # these are the points of the path for the undead to travel. It is a list, but in reality I've only programmed them to use one point.
                 ))
                 i += 1  # Repeat until satisfied.
+        elif event.type == weaponevent:
+            chambered = True
+
     
     mousex,mousey = pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1] # Get mouse position. This is from before I set up a Coord class to store it in.
 
     pressedKeys = pygame.key.get_pressed()
+    pressedMouse = pygame.mouse.get_pressed()
     if pressedKeys[K_ESCAPE]:   # Escape is an alternative way of quitting the game,
         active = False          # besides using the "X" presented on a window's title bar by most window managers.
-    if pressedKeys[K_RIGHT]: view.x += viewspeed*dt # Note that "dt" (delta time) is used here--this is what compensates for aforementioned lag.
-    if pressedKeys[K_LEFT]:  view.x -= viewspeed*dt
-    if pressedKeys[K_UP]:    view.y -= viewspeed*dt
-    if pressedKeys[K_DOWN]:  view.y += viewspeed*dt
+    if pressedKeys[K_d]: view.x += viewspeed*dt # Note that "dt" (delta time) is used here--this is what compensates for aforementioned lag.
+    if pressedKeys[K_a]: view.x -= viewspeed*dt
+    if pressedKeys[K_w]: view.y -= viewspeed*dt
+    if pressedKeys[K_s]: view.y += viewspeed*dt
+    if pressedKeys[K_SPACE]:
+        if chambered == True:
+            chambered = False
+            mixer.music.load(f"{relpath}/assets/audio/cannon.mp3")
+            mixer.music.play()
+            pygame.time.set_timer(weaponevent,CHAMBER_TIME)
+            hitrect = pygame.rect.Rect(
+                mousex-(user.difficulty["gunship"]["dmgwidth"]/2),
+                mousey-(user.difficulty["gunship"]["dmgwidth"]/2),
+                user.difficulty["gunship"]["dmgwidth"],
+                user.difficulty["gunship"]["dmgwidth"]
+                )
+            for entity in entities:
+                if type(entity) == Undead:
+                    if type(entity.state) == pygame.surface.Surface:
+                        if hitrect.colliderect(entity.state.get_rect(topleft=(entity.x,entity.y))):
+                            entity.hp = entity.hp - user.difficulty["gunship"]["dmg"]
 
     if user.DEBUG:
         if pressedKeys[K_d]: # Debug - get current coords (plan to add other info as well)
@@ -109,7 +135,9 @@ while active:
                 goto = Coord(int(goto[0]),int(goto[1]))
                 view.x = goto.x
                 view.y = goto.y
-        if pressedKeys[K_p]: print("\n", entities, "\n")
+        if pressedKeys[K_p]:
+            for i in range(len(entities)):
+                print(entities[i-1].hp)
 
     view.x = clamp(view.x,0,thermal_bg.get_width()-display.x) # Values clamped to min 0 as background is img drawn from top left
     view.y = clamp(view.y,0,thermal_bg.get_height()-display.y)
@@ -122,8 +150,28 @@ while active:
     for entity in entities:
         if type(entity) is Undead:
             pygame.Surface.blit(display.surface,entity.state,(entity.x-view.x,entity.y-view.y))
-    # This is the user's crosshair. Size can be modified in user.py
-    pygame.draw.rect(display.surface,WHITE,pygame.Rect(mousex-40*user.preferences["crosshairmulti"],mousey-20*user.preferences["crosshairmulti"],80*user.preferences["crosshairmulti"],40*user.preferences["crosshairmulti"]),2)
     
+    if True: # This was all written to de-obfuscate the process of drawing some lines. In short, coords are taken and drawn out a-coord-ingly (of course, pun intended).
+        c = user.preferences["crosshair"]["length"]
+        m = user.preferences["crosshair"]["multiplier"]
+        w = user.difficulty["gunship"]["dmgwidth"] # Fundementally, the crosshair width relies on the damage width.
+        regdiff = w/2
+        perdiff = (m*w)/2
+        cross = [
+            [(mousex+regdiff,mousey),(mousex+perdiff,mousey)],
+            [(mousex-regdiff,mousey),(mousex-perdiff,mousey)],
+            [(mousex,mousey+regdiff),(mousex,mousey+perdiff)],
+            [(mousex,mousey-regdiff),(mousex,mousey-perdiff)],
+            ]
+        criss = [
+            [(mousex+perdiff,mousey+c),(mousex+perdiff,mousey-c)],
+            [(mousex-perdiff,mousey+c),(mousex-perdiff,mousey-c)],
+            [(mousex+c,mousey+perdiff),(mousex-c,mousey+perdiff)],
+            [(mousex+c,mousey-perdiff),(mousex-c,mousey-perdiff)],
+            ]
+        for i in range(0,4):
+            pygame.draw.line(display.surface,user.preferences["crosshair"]["color"],cross[i][0],cross[i][1],user.preferences["crosshair"]["width"])
+            pygame.draw.line(display.surface,user.preferences["crosshair"]["color"],criss[i][0],criss[i][1],user.preferences["crosshair"]["width"])
+
     pygame.display.update() # Updates the entire display.
     clock.tick(framerate)   # Runs program at a target framerate.
