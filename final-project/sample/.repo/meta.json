@@ -1,0 +1,8 @@
+{
+    "indicators": {
+        "same": "|",
+        "add":  "+",
+        "diff": "-",
+        "whitespace": true
+    }
+}

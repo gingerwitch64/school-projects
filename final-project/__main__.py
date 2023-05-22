@@ -1,4 +1,7 @@
+import sys, json
+# sys will be used to read command line arguments.
 from platform import python_version
+from datetime import datetime
 
 err_prefix = "Error"
 v = { # The version of this program
@@ -10,6 +13,9 @@ v_req = { # Python Version Requirements
     "major": 3,
     "minor": 10,
 }
+
+datetime_format = "%Y:%m:%d:"
+def
 
 def main():
     pass

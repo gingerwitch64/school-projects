@@ -1,6 +1,6 @@
 # (Custom) sample files
-sample*/
-sample*
+#sample*/
+#sample*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

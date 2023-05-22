@@ -1,0 +1,8 @@
+@SOF
+ + import os
+ + import math
+ + 
+ + print("Hello world!")
+ + quit()
+ + 
+@EOF
