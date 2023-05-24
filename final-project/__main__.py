@@ -12,7 +12,7 @@ v = { # The version of this program
 }
 v_req = { # Python Version Requirements
     "major": 3,
-    "minor": 10,
+    "minor": 4,
 }
 
 datetime_format = "%Y:%m:%d:%H:%M:%S"
@@ -32,8 +32,8 @@ def parse_patch(filepath: type[str]):
 def main():
     print(datetime.now().strftime(datetime_format))
 
-# Checks if python's version is greater than 3.10.x
-# This is to ensure compatability with match: case: statements.
+# Checks if python's version is greater than 3.4.x
+# This is to ensure compatability with pathlib.
 if (__name__ == "__main__") and (python_version().split(".")[0] == str(v_req["major"]) and python_version().split(".")[1] >= str(v_req["minor"])) or (python_version().split(".")[0] > str(v_req["major"])):
     main()
 else:
