@@ -1,3 +1,0 @@
-Start on example script!
-& A comment!
-& The default comments will tell you what this is.

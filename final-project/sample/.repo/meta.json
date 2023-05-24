@@ -1,8 +1,0 @@
-{
-    "indicators": {
-        "same": "|",
-        "add":  "+",
-        "diff": "-",
-        "comment": "&"
-    }
-}

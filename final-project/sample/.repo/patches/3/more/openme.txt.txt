@@ -1,5 +1,0 @@
-@SOF
- + Hello!
- + I am a text file.
- +
-@EOF
