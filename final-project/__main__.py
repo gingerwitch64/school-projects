@@ -1,8 +1,9 @@
-import sys, json
+import sys, pathlib, json
 # sys will be used to read command line arguments.
 from platform import python_version
 from datetime import datetime
 
+executed_from = pathlib.Path(__file__).parent.resolve()
 err_prefix = "Error"
 v = { # The version of this program
     "major": 0,
@@ -14,11 +15,22 @@ v_req = { # Python Version Requirements
     "minor": 10,
 }
 
-datetime_format = "%Y:%m:%d:"
-def
+datetime_format = "%Y:%m:%d:%H:%M:%S"
+
+default_indicators = {
+    "same": "|",
+    "add":  "+",
+    "diff": "-",
+    "comment": "&",
+}
+
+def parse_patch(filepath: type[str]):
+    with open(filepath,"r") as f:
+        for line in f:
+            print(line)
 
 def main():
-    pass
+    print(datetime.now().strftime(datetime_format))
 
 # Checks if python's version is greater than 3.10.x
 # This is to ensure compatability with match: case: statements.

@@ -1,0 +1,17 @@
+@DESCRIPTION
+Start on an example script!
+
+@DATETIME
+2023:05:23:22:45:00
+
+@CHANGES
++++yay.py
++import os
++import math
++
++print("Hello world!")
++quit()
++
+@EOC
+@EOCS
+@EOF
