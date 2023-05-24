@@ -3,6 +3,6 @@
         "same": "|",
         "add":  "+",
         "diff": "-",
-        "whitespace": true
+        "comment": "&"
     }
 }
