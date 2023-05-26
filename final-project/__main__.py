@@ -7,7 +7,7 @@ from pathlib import Path
 executed_from = Path(__file__).parent.resolve()
 
 arg_parser = argparse.ArgumentParser()
-arg_parser.add_argument("--pass", "-p", type=bool, help="Run the program without passing to the shell.")
+arg_parser.add_argument("--pass", "-p", action="store_true", help="Run the program without passing to the shell.")
 
 err_prefix = "Error"
 v = { # The version of this program
