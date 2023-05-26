@@ -3,3 +3,16 @@ An example patchi file.
 
 @DATETIME
 2023:05:24:12:00:00
+
+# Start of Changes
+@SOCS
++++yay.py
++1+import math
++2+
++3+print("Hello world!")
++4+print(math.pi)
++5+
+===changeme.txt
+-4-I am boring
++4+I have transformed
+---deleteme.txt

@@ -32,7 +32,10 @@ default_indicators = {
 def parse_patch(filepath: type[Path]):
     with open(filepath,"r") as f:
         for line in f:
-            print(line) # Placeholder!
+            if str(line).startswith("+++"):
+                testpath = filepath / str("line").removeprefix("===")
+                if testpath.exists() and testpath.is_dir() == False:
+                    pass
 
 def write_patch(filepath: type[Path]):    
     pass
