@@ -22,20 +22,17 @@ v_req = { # Python Version Requirements
 
 datetime_format = "%Y:%m:%d:%H:%M:%S" # Year:Month:Day:Hour:Minute:Second ; to be used for patch files
 
-default_indicators = {
-    "same": "|",
-    "add":  "+",
-    "diff": "-",
-    "comment": "&",
-}
-
 def parse_patch(filepath: type[Path]):
     with open(filepath,"r") as f:
-        for line in f:
-            if str(line).startswith("+++"):
-                testpath = filepath / str("line").removeprefix("===")
-                if testpath.exists() and testpath.is_dir() == False:
-                    pass
+        # "raw" line (untrimmed)
+        for rline in f:
+            line = rline.strip()
+            print(line)
+            if str(line).startswith("==="):
+                testpath = filepath / str(line).removeprefix("===")
+                print(testpath,testpath.exists(),testpath.is_dir())
+                if not (testpath.exists() and testpath.is_dir()):
+                    print("yay")
 
 def write_patch(filepath: type[Path]):    
     pass
@@ -52,10 +49,12 @@ def main(argv = sys.argv, args = arg_parser.parse_args()):
             "help | h - Prints this help text",
             "quit | exit | q - Exits this shell",
             "sysarg - Print arguments that were supplied to the program",
+            "readpatch - TESTING"
             "",
             ]
         while shell:
-            command = input(f"{path}: ")
+            given = input(f"{path}: ").split(" ")
+            command = given[0]
             if command in {"quit","exit","q"}:
                 print("Quitting")
                 quit()
@@ -63,6 +62,8 @@ def main(argv = sys.argv, args = arg_parser.parse_args()):
                 for line in help_text: print(line)
             elif command == "sysarg":
                 print(argv)
+            elif command == "readpatch":
+                parse_patch(Path("C:/Users/redpe/dev/school-projects/final-project/example.patch"))
             else:
                 for line in help_text: print(line)
     print(f"patchi version {v['major']}.{v['minor']}.{v['patch']}")
