@@ -25,7 +25,7 @@ v_req = { # Python Version Requirements
     "minor": 4,
 }
 ERR_PREFIX = "Error"
-DATETIME_FORMAT = "%Y:%m:%d:%H:%M:%S" # Year:Month:Day:Hour:Minute:Second ; to be used for patch files
+DATETIME_FORMAT = "%Y/%m/%d %H:%M:%S %z (%Z)" # Year:Month:Day:Hour:Minute:Second ; to be used for patch files
 
 # DATA TYPE VARIABLES
 ADD,REM,MOD = "+","-","=" # The only reason I have decided to make these modular is because I may change the mod symbol later
@@ -39,7 +39,7 @@ class Change: # For changes per line
         self.type = type
         self.text = text
         self.line = line
-class FileChange: #
+class FileChange: # For changes per file
     type = str
     file = str
     evfi = Path # The evaluated exact location of the file
@@ -47,6 +47,14 @@ class FileChange: #
     def __init__(self,type,file,changes):
         self.type = type
         self.file = file
+        self.changes = changes
+class ChangeLog: # For changes per patch
+    name = str
+    date_time = datetime
+    changes = list[FileChange]
+    def __init__(self,name,date_time,changes):
+        self.name = name
+        self.date_time = date_time
         self.changes = changes
 
 def parse_patch(filepath: type[Path]):
@@ -94,7 +102,7 @@ def main(argv = sys.argv, args = arg_parser.parse_args()):
             else:
                 for line in help_text: print(line)
     print(f"patchi version {v['major']}.{v['minor']}.{v['patch']}")
-    print(datetime.now().strftime(DATETIME_FORMAT))
+    print(datetime.now().astimezone.strftime(DATETIME_FORMAT))
     
 
 # Checks if python's version is greater than 3.4.x
