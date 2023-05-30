@@ -86,6 +86,8 @@ def main(argv = sys.argv, args = arg_parser.parse_args()):
             "help | h - Prints this help text",
             "quit | exit | q - Exits this shell",
             "sysarg - Print arguments that were supplied to the program",
+            "cd | changedir [directory] - Update the working directory",
+            "ls | dir | listdir - List all files in the current path",
             "readpatch - TESTING"
             "",
             ]
@@ -99,11 +101,22 @@ def main(argv = sys.argv, args = arg_parser.parse_args()):
                 for line in help_text: print(line)
             elif command == "sysarg":
                 print(argv)
+            elif command in {"cd","changedir"}:
+                if len(given) == 1:
+                    print(f"{ERR_PREFIX} Command requires 1 argument.")
+                elif Path(path / given[1]).resolve().is_dir():
+                    path = Path(path / given[1]).resolve()
+                else:
+                    print(f"{ERR_PREFIX} Directory \"{Path(path / given[1])}\" does not exist.")
+            elif command in {"ls","dir","listdir"}:
+                for dir in path.iterdir():
+                    sdir = str(dir.resolve()).replace("\\","/").split("/")
+                    print(sdir[len(sdir)-1])
             elif command == "readpatch":
                 if Path(path / given[1]).resolve().exists():
                     parse_patch(Path(path / given[1]))
                 else:
-                    print(f"{ERR_PREFIX} File \"{Path(path / given[1])}\"")
+                    print(f"{ERR_PREFIX} File \"{Path(path / given[1])}\" does not exist.")
             else:
                 for line in help_text: print(line)
 
