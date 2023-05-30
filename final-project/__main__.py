@@ -1,3 +1,7 @@
+# Before anything else, it should be stated the goals of this program:
+# - To make changing of files easier to read. I don't forsee this program supporting changing of non-text files.
+# - To have the entire program contained within a single file--no custom libraries, only libraries that are built into python.
+
 import sys, argparse, pathlib, json
 # sys will be used to read command line arguments.
 from platform import python_version
