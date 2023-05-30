@@ -2,18 +2,19 @@
 # - To make changing of files easier to read. I don't forsee this program supporting changing of non-text files.
 # - To have the entire program contained within a single file--no custom libraries, only libraries that are built into python.
 
-import sys, argparse, pathlib, json
-# sys will be used to read command line arguments.
-from platform import python_version
-from datetime import datetime
-from pathlib import Path
+# IMPORTED LIBRARIES
+import sys, argparse # sys and argparse will be used to read command line arguments
+from platform import python_version # make sure python is up to date enough to use certain libraries
+from datetime import datetime # for change date/times
+from pathlib import Path # to keep track of file/path location
 
+# RUNTIME VARIABLES
+# Variables with info on the conditions of the program's execution 
 executed_from = Path(__file__).parent.resolve()
-
 arg_parser = argparse.ArgumentParser()
 arg_parser.add_argument("--pass", "-p", action="store_true", help="Run the program without passing to the shell.")
 
-err_prefix = "Error"
+# PROGRAM BEHAVIOR VARIABLES
 v = { # The version of this program
     "major": 0,
     "minor": 1,
@@ -23,8 +24,30 @@ v_req = { # Python Version Requirements
     "major": 3,
     "minor": 4,
 }
+ERR_PREFIX = "Error"
+DATETIME_FORMAT = "%Y:%m:%d:%H:%M:%S" # Year:Month:Day:Hour:Minute:Second ; to be used for patch files
 
-datetime_format = "%Y:%m:%d:%H:%M:%S" # Year:Month:Day:Hour:Minute:Second ; to be used for patch files
+# DATA TYPE VARIABLES
+ADD,REM,MOD = "+","-","=" # The only reason I have decided to make these modular is because I may change the mod symbol later
+ADD_FILE,REM_FILE,MOD_FILE = ADD*3,REM*3,MOD*3
+ADD_ALT,REM_ALT,MOD_ALT = f"{ADD}ADDSYMBOL{ADD}",f"{REM}REMSYMBOL{REM}",f"{MOD}MODSYMBOL{MOD}"
+class Change: # For changes per line
+    type = str # Insertion, removal or other modification change?
+    line = int
+    text = str
+    def __init__(self,type,line,text):
+        self.type = type
+        self.text = text
+        self.line = line
+class FileChange: #
+    type = str
+    file = str
+    evfi = Path # The evaluated exact location of the file
+    changes = list[Change] # The individual changes of the file
+    def __init__(self,type,file,changes):
+        self.type = type
+        self.file = file
+        self.changes = changes
 
 def parse_patch(filepath: type[Path]):
     with open(filepath,"r") as f:
@@ -71,7 +94,7 @@ def main(argv = sys.argv, args = arg_parser.parse_args()):
             else:
                 for line in help_text: print(line)
     print(f"patchi version {v['major']}.{v['minor']}.{v['patch']}")
-    print(datetime.now().strftime(datetime_format))
+    print(datetime.now().strftime(DATETIME_FORMAT))
     
 
 # Checks if python's version is greater than 3.4.x
@@ -79,6 +102,6 @@ def main(argv = sys.argv, args = arg_parser.parse_args()):
 if (__name__ == "__main__") and (int(python_version().split(".")[0]) == v_req["major"]) and (int(python_version().split(".")[1]) >= v_req["minor"]) or (int(python_version().split(".")[0]) > v_req["major"]):
     main()
 else:
-    print(f"{err_prefix}: Python version must be at least {v_req['major']}.{v_req['minor']}")
+    print(f"{ERR_PREFIX}: Python version must be at least {v_req['major']}.{v_req['minor']}")
     print(f"You python version is {python_version()}")
     # A quit statement is not needed here; if the program does not meet the version requirement, it will quit anyhow (End of File)
