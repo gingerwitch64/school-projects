@@ -24,7 +24,7 @@ v_req = { # Python Version Requirements
     "major": 3,
     "minor": 4,
 }
-ERR_PREFIX = "Error"
+ERR_PREFIX = "Error:"
 DATETIME_FORMAT = "%Y/%m/%d %H:%M:%S %z (%Z)" # Year:Month:Day:Hour:Minute:Second ; to be used for patch files
 
 # DATA TYPE VARIABLES
@@ -73,6 +73,8 @@ def write_patch(filepath: type[Path]):
     pass
 
 def main(argv = sys.argv, args = arg_parser.parse_args()):
+    print(f"patchi version {v['major']}.{v['minor']}.{v['patch']}")
+    print(datetime.now().astimezone().strftime(DATETIME_FORMAT))
     # This first statement is the shell. The program will redirect to here if no arguments are given.
     if len(argv) < 1 or (len(argv) < 2 and Path(argv[0]).resolve() == Path(__file__).resolve()):
         print("No arguments given, passing off to built-in shell:")
@@ -98,12 +100,12 @@ def main(argv = sys.argv, args = arg_parser.parse_args()):
             elif command == "sysarg":
                 print(argv)
             elif command == "readpatch":
-                parse_patch(Path("C:/Users/redpe/dev/school-projects/final-project/example.patch"))
+                if Path(path / given[1]).resolve().exists():
+                    parse_patch(Path(path / given[1]))
+                else:
+                    print(f"{ERR_PREFIX} File \"{Path(path / given[1])}\"")
             else:
                 for line in help_text: print(line)
-    print(f"patchi version {v['major']}.{v['minor']}.{v['patch']}")
-    print(datetime.now().astimezone.strftime(DATETIME_FORMAT))
-    
 
 # Checks if python's version is greater than 3.4.x
 # This is to ensure compatability with pathlib.
