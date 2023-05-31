@@ -32,49 +32,68 @@ ADD,REM,MOD = "+","-","=" # The only reason I have decided to make these modular
 ADD_FILE,REM_FILE,MOD_FILE = ADD*3,REM*3,MOD*3
 ADD_ALT,REM_ALT,MOD_ALT = f"{ADD}ADDSYMBOL{ADD}",f"{REM}REMSYMBOL{REM}",f"{MOD}MODSYMBOL{MOD}"
 class Change: # For changes per line
-    type = str # Insertion, removal or other modification change?
-    line = int
+    type = None # Insertion, removal or other modification change?
+    line = None
     text = str
     def __init__(self,type,line,text):
         self.type = type
         self.text = text
         self.line = line
+    def __repr__(self) -> str:
+        text = str(self.text)
+        swap = ""
+        if text ==
+        return f"""{self.type}{self.line}{self.type}{}"""
 class FileChange: # For changes per file
-    type = str
-    file = str
-    evfi = Path # The evaluated exact location of the file
-    changes = list[Change] # The individual changes of the file
+    type = None
+    file = None
+    changes = [] # The individual changes of the file
     def __init__(self,type,file,changes):
         self.type = type
         self.file = file
         self.changes = changes
+    def eval_path(self,path: Path):
+        return path / self.file
 class ChangeLog: # For changes per patch
-    name = str
-    date_time = datetime
-    changes = list[FileChange]
+    name = None
+    date_time = None
+    changes = []
     def __init__(self,name,date_time,changes):
         self.name = name
         self.date_time = date_time
         self.changes = changes
 
-def parse_patch(filepath: type[Path]):
-    with open(filepath,"r") as f:
-        # "raw" line (untrimmed)
-        for rline in f:
-            line = rline.strip()
-            print(line)
-            if str(line).startswith("==="):
-                testpath = filepath / str(line).removeprefix("===")
-                print(testpath,testpath.exists(),testpath.is_dir())
-                if not (testpath.exists() and testpath.is_dir()):
-                    print("yay")
-
-def write_patch(filepath: type[Path]):    
-    pass
+def parse_patch(patch: str) -> ChangeLog:
+    out_patch = ChangeLog
+    patchlines = patch.splitlines()
+    for line in patchlines:
+        if line.startswith("@"):
+            if line.strip("@") == "DESCRIPTION":
+                out_patch.name = patchlines[patchlines.index(line)+1]
+            elif line.strip("@") == "DATETIME":
+                out_patch.date_time = datetime.strptime(patchlines[patchlines.index(line)+1],DATETIME_FORMAT)
+    for line in patchlines:
+        if line.startswith(ADD_FILE):
+            add_temp = FileChange
+            init_pos = patchlines.index(line)
+            nest = True
+            i = 1
+            while nest:
+                current_line = patchlines[init_pos+i]
+                if current_line.startswith({ADD_FILE,REM,MOD}): nest = False
+                elif current_line.startswith(ADD):
+                    linedat = current_line.split(ADD,2)
+                    add_temp.changes.append(Change(ADD,int(linedat[1]),linedat[2].replace(ADD_ALT,ADD)))
+                i+=1
+        elif line.startswith(REM_FILE):
+            out_patch.changes.append(FileChange(REM_FILE,line.strip(REM_FILE).replace(REM_ALT,REM),None))
+    return out_patch
+            
 
 def main(argv = sys.argv, args = arg_parser.parse_args()):
     print(f"patchi version {v['major']}.{v['minor']}.{v['patch']}")
     print(datetime.now().astimezone().strftime(DATETIME_FORMAT))
+    print("{",parse_patch(Path("C:\\Users\\redpe\\dev\\school-projects\\final-project\\example.patch").resolve().open("r").read()).date_time,"}")
     # This first statement is the shell. The program will redirect to here if no arguments are given.
     if len(argv) < 1 or (len(argv) < 2 and Path(argv[0]).resolve() == Path(__file__).resolve()):
         print("No arguments given, passing off to built-in shell:")
@@ -88,7 +107,6 @@ def main(argv = sys.argv, args = arg_parser.parse_args()):
             "sysarg - Print arguments that were supplied to the program",
             "cd | changedir [directory] - Update the working directory",
             "ls | dir | listdir - List all files in the current path",
-            "readpatch - TESTING"
             "",
             ]
         while shell:
@@ -112,11 +130,11 @@ def main(argv = sys.argv, args = arg_parser.parse_args()):
                 for dir in path.iterdir():
                     sdir = str(dir.resolve()).replace("\\","/").split("/")
                     print(sdir[len(sdir)-1])
-            elif command == "readpatch":
-                if Path(path / given[1]).resolve().exists():
-                    parse_patch(Path(path / given[1]))
-                else:
-                    print(f"{ERR_PREFIX} File \"{Path(path / given[1])}\" does not exist.")
+            #elif command == "readpatch":
+            #    if Path(path / given[1]).resolve().exists():
+            #        parse_patch(Path(path / given[1]))
+            #    else:
+            #        print(f"{ERR_PREFIX} File \"{Path(path / given[1])}\" does not exist.")
             else:
                 for line in help_text: print(line)
 
