@@ -25,12 +25,13 @@ v_req = { # Python Version Requirements
     "minor": 4,
 }
 ERR_PREFIX = "Error:"
-DATETIME_FORMAT = "%Y/%m/%d %H:%M:%S %z (%Z)" # Year:Month:Day:Hour:Minute:Second ; to be used for patch files
+DATETIME_FORMAT = "%Y/%m/%d %H:%M:%S %z %Z" # Year:Month:Day:Hour:Minute:Second ; to be used for patch files
 
 # DATA TYPE VARIABLES
 ADD,REM,MOD = "+","-","=" # The only reason I have decided to make these modular is because I may change the mod symbol later
 ADD_FILE,REM_FILE,MOD_FILE = ADD*3,REM*3,MOD*3
 ADD_ALT,REM_ALT,MOD_ALT = f"{ADD}ADDSYMBOL{ADD}",f"{REM}REMSYMBOL{REM}",f"{MOD}MODSYMBOL{MOD}"
+
 class Change: # For changes per line
     type = None # Insertion, removal or other modification change?
     line = None
@@ -39,11 +40,20 @@ class Change: # For changes per line
         self.type = type
         self.text = text
         self.line = line
-    def __repr__(self) -> str:
-        text = str(self.text)
+    def __str__(self) -> str:
+        type = str(self.type)
         swap = ""
-        if text ==
-        return f"""{self.type}{self.line}{self.type}{}"""
+        if type == ADD:
+            swap = ADD_ALT
+        elif type == REM:
+            swap = REM_ALT
+        elif type == MOD:
+            swap = MOD_ALT
+        else:
+            swap = type
+        return f"{self.type}{self.line}{self.type}{str(self.text).replace(type,swap)}\n"
+    __repr__ = __str__
+
 class FileChange: # For changes per file
     type = None
     file = None
@@ -54,6 +64,13 @@ class FileChange: # For changes per file
         self.changes = changes
     def eval_path(self,path: Path):
         return path / self.file
+    def __str__(self) -> str:
+        start = f"{self.type}{self.file}\n"
+        for change in self.changes:
+            start += str(change)
+        return start
+    __repr__ = __str__
+
 class ChangeLog: # For changes per patch
     name = None
     date_time = None
@@ -62,9 +79,15 @@ class ChangeLog: # For changes per patch
         self.name = name
         self.date_time = date_time
         self.changes = changes
+    def __str__(self):
+        start = f"@DESCRIPTION\n{self.name}\n\n@DATETIME\n{self.date_time}\n\n"
+        for change in self.changes:
+            start += str(change)
+        return start
+    __repr__ = __str__
 
-def parse_patch(patch: str) -> ChangeLog:
-    out_patch = ChangeLog
+def parse_patch(patch: str):
+    out_patch = ChangeLog("",None,[])
     patchlines = patch.splitlines()
     for line in patchlines:
         if line.startswith("@"):
@@ -74,26 +97,40 @@ def parse_patch(patch: str) -> ChangeLog:
                 out_patch.date_time = datetime.strptime(patchlines[patchlines.index(line)+1],DATETIME_FORMAT)
     for line in patchlines:
         if line.startswith(ADD_FILE):
-            add_temp = FileChange
+            add_temp = FileChange(ADD_FILE,line.strip().strip(ADD_FILE),[])
             init_pos = patchlines.index(line)
-            nest = True
             i = 1
-            while nest:
+            while True:
+                if init_pos+i >= len(patchlines):
+                    break
                 current_line = patchlines[init_pos+i]
-                if current_line.startswith({ADD_FILE,REM,MOD}): nest = False
+                if current_line.startswith(ADD_FILE): break
                 elif current_line.startswith(ADD):
                     linedat = current_line.split(ADD,2)
                     add_temp.changes.append(Change(ADD,int(linedat[1]),linedat[2].replace(ADD_ALT,ADD)))
+                else: break
                 i+=1
+            out_patch.changes.append(add_temp)
         elif line.startswith(REM_FILE):
-            out_patch.changes.append(FileChange(REM_FILE,line.strip(REM_FILE).replace(REM_ALT,REM),None))
+            out_patch.changes.append(FileChange(REM_FILE,line.strip(REM_FILE).replace(REM_ALT,REM),[]))
     return out_patch
-            
+
+example_parsed = parse_patch("""@DESCRIPTION
+A test with change types!
+
+@DATETIME
+2023/05/31 10:11:40 -0400 EDT
+
++++test.txt
++1+Hello!
++2+Woah!
++3+2+2=4
++4+""")
+print(example_parsed)
 
 def main(argv = sys.argv, args = arg_parser.parse_args()):
     print(f"patchi version {v['major']}.{v['minor']}.{v['patch']}")
     print(datetime.now().astimezone().strftime(DATETIME_FORMAT))
-    print("{",parse_patch(Path("C:\\Users\\redpe\\dev\\school-projects\\final-project\\example.patch").resolve().open("r").read()).date_time,"}")
     # This first statement is the shell. The program will redirect to here if no arguments are given.
     if len(argv) < 1 or (len(argv) < 2 and Path(argv[0]).resolve() == Path(__file__).resolve()):
         print("No arguments given, passing off to built-in shell:")
