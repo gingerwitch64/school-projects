@@ -100,7 +100,7 @@ v_req = { # Python Version Requirements
     "minor": 4,
 }
 ERR_PREFIX = "Error:"
-DATETIME_FORMAT = "%Y/%m/%d %H:%M:%S%z" # Year:Month:Day:Hour:Minute:Second ; to be used for patch files
+DATETIME_FORMAT = "%Y/%m/%d %H:%M:%S%z" # Year/Month/Day Hour:Minute:Second+-UTC offset ; to be used for patch files
 
 # DATA TYPE VARIABLES
 ADD,REM,MOD = "+","-","=" # The only reason I have decided to make these modular is because I may change the mod symbol later
