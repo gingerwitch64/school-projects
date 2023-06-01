@@ -215,7 +215,14 @@ def parse_patch(patch: str):
                         f_change_buffer.changes.append(Change(ADD,int(linedat[1]),linedat[2].replace(ADD_ALT,ADD)))
                     else:
                         chngdat_buffer = linedat[2].split(ADD_FILE)
-                        f_change_buffer.changes.append(Change(MOD,linedat[1],chngdat_buffer[0].replace(ADD_ALT,ADD),chngdat_buffer[1].replace(ADD_ALT,ADD)))
+                        f_change_buffer.changes.append(Change(ADD,linedat[1],chngdat_buffer[0].replace(ADD_ALT,ADD),chngdat_buffer[1].replace(ADD_ALT,ADD)))
+                elif current_line.startswith(REM):
+                    linedat = current_line.split(REM,2)
+                    if linedat[1].isdigit():
+                        f_change_buffer.changes.append(Change(REM,int(linedat[1]),linedat[2].replace(REM_ALT,REM)))
+                    else:
+                        chngdat_buffer = linedat[2].split(REM_FILE)
+                        f_change_buffer.changes.append(Change(REM,linedat[1],chngdat_buffer[0].replace(REM_ALT,REM),chngdat_buffer[1].replace(REM_ALT,REM)))
                 else: break
                 i+=1
             out_patch.changes.append(f_change_buffer)
