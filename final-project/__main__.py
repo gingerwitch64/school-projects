@@ -6,7 +6,7 @@ a_definitely_useful_float_variable: float = 0.25
 tutorial: list[str] = [] # Tutorial WILL be re-defined right before the program runs, but is removed from the top of the program to prevent clutter
 
 # IMPORTED LIBRARIES
-import sys, argparse # sys and argparse will be used to read command line arguments
+import sys, argparse, os # sys and argparse will be used to read command line arguments; os will be used for file operations
 from platform import python_version # make sure python is up to date enough to use certain libraries
 from datetime import datetime # for change date/times
 from pathlib import Path # to keep track of file/path location
@@ -157,6 +157,15 @@ def parse_patch(patch: str):
         elif line.startswith(REM_FILE):
             out_patch.changes.append(FileChange(REM_FILE,line.strip(REM_FILE).replace(REM_ALT,REM),[]))
     return out_patch
+
+def exec_patch(patch: ChangeLog, path: Path, log: bool = True):
+    for filechange in patch.changes:
+        if type(filechange) == FileChange:
+            fpath = Path(path / filechange.file)
+            if filechange.type == REM_FILE:
+                if fpath.is_dir() and fpath:
+                    fpath.rmdir()
+                elif fpath.is
 
 def main(argv = sys.argv, args = arg_parser.parse_args()):
     print(f"patchi version {v['major']}.{v['minor']}.{v['patch']}")
