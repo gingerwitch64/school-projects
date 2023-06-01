@@ -2,6 +2,81 @@
 # - To make changing of files easier to read. I don't forsee this program supporting changing of non-text files.
 # - To have the entire program contained within a single file--no custom libraries, only libraries that are built into python.
 
+a_definitely_useful_float_variable: float = 0.25
+
+tutorial = [
+"(Press [ENTER] to print the next set of instructions.)",
+"This tutorial will walk you through the essential parts of a patchi file.",
+"""\
+Firstly, it should be made clear the design of this format and program.
+patchi intends to make reading and writing text patches intuitively and legibly,
+without using a more complicated (although definitely superior) VCS such as git.\
+""",
+"""\
+Two variables that should be included in every patchi file are:
+ - @DESCRIPTION
+ - @DATETIME
+
+These provide useful metadate for the user and the program.
+
+@DESCRIPTION will be the description of your patch.
+
+@DATETIME will be automatically generated with an auto-generated patch,
+but if you are manually writing a patch, you can copy-and-paste the
+date-time that this program generates on startup or use "datetime" in-shell.
+
+The description or datetime must be on the line AFTER the variable indicator.
+
+Example:
+@DESCRIPTION
+My first patchi file!
+
+@DATETIME
+2023/05/31 23:00:00+0000\
+""",
+"""\
+Comments in patchi are represented by "#"s.
+Unlike other scripts and programming languages, comments MUST be on their own line.
+Spacing before and after does not matter, however.
+
+Example:
++++new.txt
+ # This will make a new file!\
+""",
+"""\
+Indicators in patchi include:
+ADD (Insert): +
+REM (Remove): -
+MOD (Change): =
+
+Indicators will separate the line number from the text to operate with.
+
+File indicators will use three of either:
++++ indicates a brand new file
+--- indicates deletion of a file
+=== indicates modification of a file
+
+Example:
++++new.txt
++4+Hello, world!
+ # This will insert empty lines in a new file (in this case new.txt)
+ # Until line 4, where "Hello, world!" will be inserted.
+ # It should also be noted that all new files will be ended with a newline.
+
+---deleteme.txt
+
+===changeme.txt
+=3=foo = True
+ # This will replace the text on line three with "foo = True"
++4+bar = True
+ # This will insert a new line with "bar = True", but move everything following it down.
+ # Good for patches that are adding more to code.
+-5-while True: pass
+ # Similarly, this will remove a line but move all following lines upwards.\
+""",
+"There will be more to come!",
+]
+
 # IMPORTED LIBRARIES
 import sys, argparse # sys and argparse will be used to read command line arguments
 from platform import python_version # make sure python is up to date enough to use certain libraries
@@ -25,7 +100,7 @@ v_req = { # Python Version Requirements
     "minor": 4,
 }
 ERR_PREFIX = "Error:"
-DATETIME_FORMAT = "%Y/%m/%d %H:%M:%S %z %Z" # Year:Month:Day:Hour:Minute:Second ; to be used for patch files
+DATETIME_FORMAT = "%Y/%m/%d %H:%M:%S%z" # Year:Month:Day:Hour:Minute:Second ; to be used for patch files
 
 # DATA TYPE VARIABLES
 ADD,REM,MOD = "+","-","=" # The only reason I have decided to make these modular is because I may change the mod symbol later
@@ -43,12 +118,12 @@ class Change: # For changes per line
     def __str__(self) -> str:
         type = str(self.type)
         swap = ""
-        if type == ADD:
-            swap = ADD_ALT
+        if   type == ADD:
+            swap  =  ADD_ALT
         elif type == REM:
-            swap = REM_ALT
+            swap  =  REM_ALT
         elif type == MOD:
-            swap = MOD_ALT
+            swap  =  MOD_ALT
         else:
             swap = type
         return f"{self.type}{self.line}{self.type}{str(self.text).replace(type,swap)}\n"
@@ -97,7 +172,7 @@ def parse_patch(patch: str):
                 out_patch.date_time = datetime.strptime(patchlines[patchlines.index(line)+1],DATETIME_FORMAT)
     for line in patchlines:
         if line.startswith(ADD_FILE):
-            add_temp = FileChange(ADD_FILE,line.strip().strip(ADD_FILE),[])
+            f_change_buffer = FileChange(ADD_FILE,line.strip().strip(ADD_FILE),[])
             init_pos = patchlines.index(line)
             i = 1
             while True:
@@ -105,12 +180,32 @@ def parse_patch(patch: str):
                     break
                 current_line = patchlines[init_pos+i]
                 if current_line.startswith(ADD_FILE): break
+                elif current_line.strip().startswith("#"): pass
                 elif current_line.startswith(ADD):
                     linedat = current_line.split(ADD,2)
-                    add_temp.changes.append(Change(ADD,int(linedat[1]),linedat[2].replace(ADD_ALT,ADD)))
+                    f_change_buffer.changes.append(Change(ADD,int(linedat[1]),linedat[2].replace(ADD_ALT,ADD)))
                 else: break
                 i+=1
-            out_patch.changes.append(add_temp)
+            out_patch.changes.append(f_change_buffer)
+        elif line.startswith(MOD_FILE):
+            f_change_buffer = FileChange(MOD_FILE,line.strip().strip(MOD_FILE),[])
+            init_pos = patchlines.index(line)
+            i = 1
+            while True:
+                if init_pos+i >= len(patchlines):
+                    break
+                current_line = patchlines[init_pos+i]
+                if current_line.startswith(MOD_FILE): break
+                elif current_line.strip().startswith("#"): pass
+                elif current_line.startswith(MOD):
+                    linedat = current_line.split(MOD,2)
+                    f_change_buffer.changes.append(Change(MOD,linedat[1],linedat[2].replace(MOD_ALT,MOD))) # Note: linedat[1] (line number) is NOT converted to int for later implementation of functions
+                elif current_line.startswith(ADD):
+                    linedat = current_line.split(ADD,2)
+                    f_change_buffer.changes.append(Change(ADD,linedat[1],linedat[2].replace(ADD_ALT,ADD)))
+                else: break
+                i+=1
+            out_patch.changes.append(f_change_buffer)
         elif line.startswith(REM_FILE):
             out_patch.changes.append(FileChange(REM_FILE,line.strip(REM_FILE).replace(REM_ALT,REM),[]))
     return out_patch
@@ -119,14 +214,14 @@ example_parsed = parse_patch("""@DESCRIPTION
 A test with change types!
 
 @DATETIME
-2023/05/31 10:11:40 -0400 EDT
+2023/05/31 10:11:40-0400
 
 +++test.txt
 +1+Hello!
 +2+Woah!
-+3+2+2=4
-+4+""")
++3+2+2=4""")
 print(example_parsed)
+print(parse_patch(open(Path(f"{executed_from}/example.patch").resolve()).read()))
 
 def main(argv = sys.argv, args = arg_parser.parse_args()):
     print(f"patchi version {v['major']}.{v['minor']}.{v['patch']}")
@@ -139,9 +234,11 @@ def main(argv = sys.argv, args = arg_parser.parse_args()):
         help_text = [
             "",
             "patchi help menu",
+            "tutorial | tutor | t - Start a walkthrough on how to write a patchi file",
             "help | h - Prints this help text",
             "quit | exit | q - Exits this shell",
             "sysarg - Print arguments that were supplied to the program",
+            "datetime | dt | d - Print datetime in patchi's format",
             "cd | changedir [directory] - Update the working directory",
             "ls | dir | listdir - List all files in the current path",
             "",
@@ -154,8 +251,16 @@ def main(argv = sys.argv, args = arg_parser.parse_args()):
                 quit()
             elif command in {"help","h"}:
                 for line in help_text: print(line)
+            elif command in {"tutorial","tutor","t"}:
+                i = 0
+                while i < len(tutorial):
+                    print(i+1,tutorial[i])
+                    input()
+                    i+=1
             elif command == "sysarg":
                 print(argv)
+            elif command in {"datetime","dt","d"}:
+                print(f"@DATETIME\n{datetime.now().astimezone().strftime(DATETIME_FORMAT)}")
             elif command in {"cd","changedir"}:
                 if len(given) == 1:
                     print(f"{ERR_PREFIX} Command requires 1 argument.")
@@ -173,6 +278,7 @@ def main(argv = sys.argv, args = arg_parser.parse_args()):
             #    else:
             #        print(f"{ERR_PREFIX} File \"{Path(path / given[1])}\" does not exist.")
             else:
+                print("Unrecognized keyword.")
                 for line in help_text: print(line)
 
 # Checks if python's version is greater than 3.4.x
