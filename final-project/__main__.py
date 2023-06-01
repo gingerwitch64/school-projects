@@ -163,9 +163,16 @@ def exec_patch(patch: ChangeLog, path: Path, log: bool = True):
         if type(filechange) == FileChange:
             fpath = Path(path / filechange.file)
             if filechange.type == REM_FILE:
-                if fpath.is_dir() and fpath:
+                if fpath.is_dir() and len(fpath.iterdir()) == 0:
                     fpath.rmdir()
-                elif fpath.is
+                    if log: print(f"{fpath} removed.")
+                elif fpath.is_dir() and len(fpath.iterdir()) != 0:
+                    if log: print(f"{ERR_PREFIX} The directory {fpath}")
+                elif fpath.is_file():
+                    fpath.unlink()
+                    if log: print(f"{fpath} removed.")
+                elif not fpath.exists():
+                    if log: print(f"{fpath} does not exist; continuing.")
 
 def main(argv = sys.argv, args = arg_parser.parse_args()):
     print(f"patchi version {v['major']}.{v['minor']}.{v['patch']}")
