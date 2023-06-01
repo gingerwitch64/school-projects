@@ -3,79 +3,7 @@
 # - To have the entire program contained within a single file--no custom libraries, only libraries that are built into python.
 
 a_definitely_useful_float_variable: float = 0.25
-
-tutorial = [
-"(Press [ENTER] to print the next set of instructions.)",
-"This tutorial will walk you through the essential parts of a patchi file.",
-"""\
-Firstly, it should be made clear the design of this format and program.
-patchi intends to make reading and writing text patches intuitively and legibly,
-without using a more complicated (although definitely superior) VCS such as git.\
-""",
-"""\
-Two variables that should be included in every patchi file are:
- - @DESCRIPTION
- - @DATETIME
-
-These provide useful metadate for the user and the program.
-
-@DESCRIPTION will be the description of your patch.
-
-@DATETIME will be automatically generated with an auto-generated patch,
-but if you are manually writing a patch, you can copy-and-paste the
-date-time that this program generates on startup or use "datetime" in-shell.
-
-The description or datetime must be on the line AFTER the variable indicator.
-
-Example:
-@DESCRIPTION
-My first patchi file!
-
-@DATETIME
-2023/05/31 23:00:00+0000\
-""",
-"""\
-Comments in patchi are represented by "#"s.
-Unlike other scripts and programming languages, comments MUST be on their own line.
-Spacing before and after does not matter, however.
-
-Example:
-+++new.txt
- # This will make a new file!\
-""",
-"""\
-Indicators in patchi include:
-ADD (Insert): +
-REM (Remove): -
-MOD (Change): =
-
-Indicators will separate the line number from the text to operate with.
-
-File indicators will use three of either:
-+++ indicates a brand new file
---- indicates deletion of a file
-=== indicates modification of a file
-
-Example:
-+++new.txt
-+4+Hello, world!
- # This will insert empty lines in a new file (in this case new.txt)
- # Until line 4, where "Hello, world!" will be inserted.
- # It should also be noted that all new files will be ended with a newline.
-
----deleteme.txt
-
-===changeme.txt
-=3=foo = True
- # This will replace the text on line three with "foo = True"
-+4+bar = True
- # This will insert a new line with "bar = True", but move everything following it down.
- # Good for patches that are adding more to code.
--5-while True: pass
- # Similarly, this will remove a line but move all following lines upwards.\
-""",
-"There will be more to come!",
-]
+tutorial: list[str] = [] # Tutorial WILL be re-defined right before the program runs, but is removed from the top of the program to prevent clutter
 
 # IMPORTED LIBRARIES
 import sys, argparse # sys and argparse will be used to read command line arguments
@@ -287,6 +215,80 @@ def main(argv = sys.argv, args = arg_parser.parse_args()):
             else:
                 print("Unrecognized keyword.")
                 for line in help_text: print(line)
+
+# Here is the Tutorial, and where it is redefined.
+tutorial = [
+"(Press [ENTER] to print the next set of instructions.)",
+"This tutorial will walk you through the essential parts of a patchi file.",
+"""\
+Firstly, it should be made clear the design of this format and program.
+patchi intends to make reading and writing text patches intuitively and legibly,
+without using a more complicated (although definitely superior) VCS such as git.\
+""",
+"""\
+Two variables that should be included in every patchi file are:
+ - @DESCRIPTION
+ - @DATETIME
+
+These provide useful metadate for the user and the program.
+
+@DESCRIPTION will be the description of your patch.
+
+@DATETIME will be automatically generated with an auto-generated patch,
+but if you are manually writing a patch, you can copy-and-paste the
+date-time that this program generates on startup or use "datetime" in-shell.
+
+The description or datetime must be on the line AFTER the variable indicator.
+
+Example:
+@DESCRIPTION
+My first patchi file!
+
+@DATETIME
+2023/05/31 23:00:00+0000\
+""",
+"""\
+Comments in patchi are represented by "#"s.
+Unlike other scripts and programming languages, comments MUST be on their own line.
+Spacing before and after does not matter, however.
+
+Example:
++++new.txt
+ # This will make a new file!\
+""",
+"""\
+Indicators in patchi include:
+ADD (Insert): +
+REM (Remove): -
+MOD (Change): =
+
+Indicators will separate the line number from the text to operate with.
+
+File indicators will use three of either:
++++ indicates a brand new file
+--- indicates deletion of a file
+=== indicates modification of a file
+
+Example:
++++new.txt
++4+Hello, world!
+ # This will insert empty lines in a new file (in this case new.txt)
+ # Until line 4, where "Hello, world!" will be inserted.
+ # It should also be noted that all new files will be ended with a newline.
+
+---deleteme.txt
+
+===changeme.txt
+=3=foo = True
+ # This will replace the text on line three with "foo = True"
++4+bar = True
+ # This will insert a new line with "bar = True", but move everything following it down.
+ # Good for patches that are adding more to code.
+-5-while True: pass
+ # Similarly, this will remove a line but move all following lines upwards.\
+""",
+"There will be more to come!",
+]
 
 # Checks if python's version is greater than 3.4.x
 # This is to ensure compatability with pathlib.
