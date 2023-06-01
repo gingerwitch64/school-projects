@@ -100,7 +100,7 @@ v_req = { # Python Version Requirements
     "minor": 4,
 }
 ERR_PREFIX = "Error:"
-DATETIME_FORMAT = "%Y/%m/%d %H:%M:%S%z" # Year/Month/Day Hour:Minute:Second+-UTC offset ; to be used for patch files
+DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S%z" # Year/Month/Day Hour:Minute:Second+-UTC offset ; to be used for patch files
 
 # DATA TYPE VARIABLES
 ADD,REM,MOD = "+","-","=" # The only reason I have decided to make these modular is because I may change the mod symbol later
@@ -110,11 +110,13 @@ ADD_ALT,REM_ALT,MOD_ALT = f"{ADD}ADDSYMBOL{ADD}",f"{REM}REMSYMBOL{REM}",f"{MOD}M
 class Change: # For changes per line
     type = None # Insertion, removal or other modification change?
     line = None
+    condition = None
     text = str
-    def __init__(self,type,line,text):
+    def __init__(self,type,line,text,condition = None):
         self.type = type
         self.text = text
         self.line = line
+        self.condition = condition
     def __str__(self) -> str:
         type = str(self.type)
         swap = ""
@@ -126,7 +128,10 @@ class Change: # For changes per line
             swap  =  MOD_ALT
         else:
             swap = type
-        return f"{self.type}{self.line}{self.type}{str(self.text).replace(type,swap)}\n"
+        if self.condition != None:
+            return f"{self.type}{self.line}{self.type}{str(self.text).replace(type,swap)}{str(self.type)*3}{self.condition.replace(type,swap)}\n"
+        else:
+            return f"{self.type}{self.line}{self.type}{str(self.text).replace(type,swap)}\n"
     __repr__ = __str__
 
 class FileChange: # For changes per file
@@ -183,7 +188,7 @@ def parse_patch(patch: str):
                 elif current_line.strip().startswith("#"): pass
                 elif current_line.startswith(ADD):
                     linedat = current_line.split(ADD,2)
-                    f_change_buffer.changes.append(Change(ADD,int(linedat[1]),linedat[2].replace(ADD_ALT,ADD)))
+                    f_change_buffer.changes.append(Change(ADD,int(linedat[1]),linedat[2].replace(ADD_ALT,ADD))) # With new files, line numbers MUST be specified.
                 else: break
                 i+=1
             out_patch.changes.append(f_change_buffer)
@@ -199,29 +204,24 @@ def parse_patch(patch: str):
                 elif current_line.strip().startswith("#"): pass
                 elif current_line.startswith(MOD):
                     linedat = current_line.split(MOD,2)
-                    f_change_buffer.changes.append(Change(MOD,linedat[1],linedat[2].replace(MOD_ALT,MOD))) # Note: linedat[1] (line number) is NOT converted to int for later implementation of functions
+                    if linedat[1].isdigit():
+                        f_change_buffer.changes.append(Change(MOD,int(linedat[1]),linedat[2].replace(MOD_ALT,MOD)))
+                    else:
+                        chngdat_buffer = linedat[2].split(MOD_FILE)
+                        f_change_buffer.changes.append(Change(MOD,linedat[1],chngdat_buffer[0].replace(MOD_ALT,MOD),chngdat_buffer[1].replace(MOD_ALT,MOD)))
                 elif current_line.startswith(ADD):
                     linedat = current_line.split(ADD,2)
-                    f_change_buffer.changes.append(Change(ADD,linedat[1],linedat[2].replace(ADD_ALT,ADD)))
+                    if linedat[1].isdigit():
+                        f_change_buffer.changes.append(Change(ADD,int(linedat[1]),linedat[2].replace(ADD_ALT,ADD)))
+                    else:
+                        chngdat_buffer = linedat[2].split(ADD_FILE)
+                        f_change_buffer.changes.append(Change(MOD,linedat[1],chngdat_buffer[0].replace(ADD_ALT,ADD),chngdat_buffer[1].replace(ADD_ALT,ADD)))
                 else: break
                 i+=1
             out_patch.changes.append(f_change_buffer)
         elif line.startswith(REM_FILE):
             out_patch.changes.append(FileChange(REM_FILE,line.strip(REM_FILE).replace(REM_ALT,REM),[]))
     return out_patch
-
-example_parsed = parse_patch("""@DESCRIPTION
-A test with change types!
-
-@DATETIME
-2023/05/31 10:11:40-0400
-
-+++test.txt
-+1+Hello!
-+2+Woah!
-+3+2+2=4""")
-print(example_parsed)
-print(parse_patch(open(Path(f"{executed_from}/example.patch").resolve()).read()))
 
 def main(argv = sys.argv, args = arg_parser.parse_args()):
     print(f"patchi version {v['major']}.{v['minor']}.{v['patch']}")

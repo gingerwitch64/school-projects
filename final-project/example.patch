@@ -2,14 +2,14 @@
 An example patchi file.
 
 @DATETIME
-2023/05/24 12:00:00-0400
+2023-05-24 12:00:00-0400
 
 +++yay.py
 +1+import math
 +3+print("Hello world!")
 +4+print(math.pi+ADDSYMBOL+1)
 ===changeme.txt
-=@FINDFIRSTLINEme=MODSYMBOL=False@=me=MODSYMBOL=True
+=@FINDFIRSTLINE=me=MODSYMBOL=False===me=MODSYMBOL=True
 # Replace:
 # The first occurence of the line:
 #   me=False
