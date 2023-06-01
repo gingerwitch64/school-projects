@@ -66,7 +66,7 @@ class FileChange: # For changes per file
     type = None
     file = None
     changes = [] # The individual changes of the file
-    def __init__(self,type,file,changes):
+    def __init__(self,type,file,changes: list[Change]):
         self.type = type
         self.file = file
         self.changes = changes
@@ -80,15 +80,15 @@ class FileChange: # For changes per file
     __repr__ = __str__
 
 class ChangeLog: # For changes per patch
-    name = None
-    date_time = None
-    changes = []
-    def __init__(self,name,date_time,changes):
-        self.name = name
+    desc = str
+    date_time = datetime
+    changes = list[FileChange]
+    def __init__(self,name,date_time: datetime,changes: list[FileChange]):
+        self.desc = name
         self.date_time = date_time
         self.changes = changes
     def __str__(self):
-        start = f"@DESCRIPTION\n{self.name}\n\n@DATETIME\n{self.date_time}\n\n"
+        start = f"@DESCRIPTION\n{self.desc}\n\n@DATETIME\n{self.date_time}\n\n"
         for change in self.changes:
             start += str(change)
         return start
@@ -100,7 +100,7 @@ def parse_patch(patch: str):
     for line in patchlines:
         if line.startswith("@"):
             if line.strip("@") == "DESCRIPTION":
-                out_patch.name = patchlines[patchlines.index(line)+1]
+                out_patch.desc = patchlines[patchlines.index(line)+1]
             elif line.strip("@") == "DATETIME":
                 out_patch.date_time = datetime.strptime(patchlines[patchlines.index(line)+1],DATETIME_FORMAT)
     for line in patchlines:
