@@ -2,7 +2,6 @@
 # - To make changing of files easier to read. I don't forsee this program supporting changing of non-text files.
 # - To have the entire program contained within a single file--no custom libraries, only libraries that are built into python.
 
-a_definitely_useful_float_variable: float = 0.25
 tutorial: list[str] = [] # Tutorial WILL be re-defined right before the program runs, but is removed from the top of the program to prevent clutter
 
 # IMPORTED LIBRARIES
@@ -10,6 +9,7 @@ import sys, argparse, os # sys and argparse will be used to read command line ar
 from platform import python_version # make sure python is up to date enough to use certain libraries
 from datetime import datetime # for change date/times
 from pathlib import Path # to keep track of file/path location
+from time import time # to track function execution time
 
 # RUNTIME VARIABLES
 # Variables with info on the conditions of the program's execution 
@@ -35,7 +35,7 @@ ADD,REM,MOD = "+","-","=" # The only reason I have decided to make these modular
 ADD_FILE,REM_FILE,MOD_FILE = ADD*3,REM*3,MOD*3
 ADD_ALT,REM_ALT,MOD_ALT = f"{ADD}ADDSYMBOL{ADD}",f"{REM}REMSYMBOL{REM}",f"{MOD}MODSYMBOL{MOD}"
 # Some line-function presets
-FINDFIRSTLINE,FINDLASTLINE,FINDALLLINES = "FINDFIRSTLINE","FINDLASTLINE","FINDALLLINES"
+FINDFIRSTLINE,FINDLASTLINE = "FINDFIRSTLINE","FINDLASTLINE"
 
 class Change: # For changes per line
     type = None # Insertion, removal or other modification change?
@@ -50,7 +50,7 @@ class Change: # For changes per line
     def __str__(self) -> str:
         type = str(self.type)
         swap = ""
-        if   type == ADD:
+        if type == ADD:
             swap  =  ADD_ALT
         elif type == REM:
             swap  =  REM_ALT
@@ -161,10 +161,11 @@ def parse_patch(patch: str):
     return out_patch
 
 def exec_patch(patch: ChangeLog, path: Path, log: bool = True):
+    start: float = time()
     for filechange in patch.changes:
         if type(filechange) == FileChange:
             fpath = Path(path / filechange.file)
-            """if filechange.type == REM_FILE:
+            if filechange.type == REM_FILE:
                 if fpath.is_dir() and len(fpath.iterdir()) == 0:
                     fpath.rmdir()
                     if log: print(f"{fpath} removed.")
@@ -174,8 +175,8 @@ def exec_patch(patch: ChangeLog, path: Path, log: bool = True):
                     fpath.unlink()
                     if log: print(f"{fpath} removed.")
                 elif not fpath.exists():
-                    if log: print(f"{fpath} ordered to be removed, but does not exist; ignoring.")"""
-            if filechange.type == ADD_FILE:
+                    if log: print(f"{fpath} ordered to be removed, but does not exist; ignoring.")
+            elif filechange.type == ADD_FILE:
                 if filechange.changes == []:
                     if log: print(f"{fpath} being created as a directory (no changes; if you wanted to create a file, add at least \"+1+\")")
                     fpath.mkdir(parents=True,exist_ok=True)
@@ -190,12 +191,35 @@ def exec_patch(patch: ChangeLog, path: Path, log: bool = True):
                                 if int(change.line) <= len(lines):
                                     lines.pop(int(change.line))
                                 lines.insert(int(change.line)-1,str(change.text))
-
-debug = False # My personal debugging stuff
-if debug == True:
-    expatch = parse_patch(Path(executed_from/"example.patch").resolve().read_text())
-    print("START",expatch,"END")
-    exec_patch(expatch,Path(executed_from),True)
+                    with open(fpath,mode="w+") as file:
+                        file.write('\n'.join(lines))
+            elif filechange.type == MOD_FILE:
+                lines = [i.rstrip('\n') for i in open(fpath).readlines()]
+                for change in filechange.changes:
+                    if type(change) == Change:
+                        if str(change.line).isdigit(): change.line = int(change.line)
+                        elif str(change.line).isdigit() == False:
+                            try:
+                                if change.line == FINDFIRSTLINE: change.line = lines.index(str(change.condition))
+                                elif change.line == FINDLASTLINE: change.line = len(lines) - [lines[i] for i in range(len(lines)-1,-1,-1)].index(change.condition)
+                            except ValueError:
+                                print(f"{ERR_PREFIX} {change.condition} was not found on any line; {change.type} operation to \"{change.text}\" will not be made.")
+                                continue
+                        if change.type == ADD:
+                            if int(change.line) > len(lines):
+                                while len(lines) < int(change.line)-1: lines.append("")
+                            lines.insert(int(change.line)-1,str(change.text))
+                        elif change.type == REM:
+                            lines.pop(int(change.line)-1)
+                        elif change.type == MOD:
+                            if int(change.line) > len(lines):
+                                while len(lines) < int(change.line)-1: lines.append("")
+                            lines.pop(int(change.line)-1)
+                            lines.insert(int(change.line)-1,str(change.text))
+                with open(fpath,mode="w+") as file:
+                    file.write('\n'.join(lines))
+    end = time()
+    if log: print("Change execution completed in",end-start,"seconds.")
 
 def main(argv = sys.argv, args = arg_parser.parse_args()):
     print(f"patchi version {v['major']}.{v['minor']}.{v['patch']}")
@@ -222,7 +246,7 @@ def main(argv = sys.argv, args = arg_parser.parse_args()):
             command = given[0]
             if command in {"quit","exit","q"}:
                 print("Quitting")
-                quit()
+                quit(0)
             elif command in {"help","h"}:
                 for line in help_text: print(line)
             elif command in {"tutorial","tutor","t"}:
