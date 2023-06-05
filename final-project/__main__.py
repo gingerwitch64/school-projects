@@ -34,6 +34,8 @@ DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S%z" # Year/Month/Day Hour:Minute:Second+-UTC
 ADD,REM,MOD = "+","-","=" # The only reason I have decided to make these modular is because I may change the mod symbol later
 ADD_FILE,REM_FILE,MOD_FILE = ADD*3,REM*3,MOD*3
 ADD_ALT,REM_ALT,MOD_ALT = f"{ADD}ADDSYMBOL{ADD}",f"{REM}REMSYMBOL{REM}",f"{MOD}MODSYMBOL{MOD}"
+# Some line-function presets
+FINDFIRSTLINE,FINDLASTLINE,FINDALLLINES = "FINDFIRSTLINE","FINDLASTLINE","FINDALLLINES"
 
 class Change: # For changes per line
     type = None # Insertion, removal or other modification change?
@@ -57,7 +59,7 @@ class Change: # For changes per line
         else:
             swap = type
         if self.condition != None:
-            return f"{self.type}{self.line}{self.type}{str(self.text).replace(type,swap)}{str(self.type)*3}{self.condition.replace(type,swap)}\n"
+            return f"{self.type}{self.line}{self.type}{str(self.text).replace(type,swap)}{str(self.type)*3}{str(self.condition).replace(type,swap)}\n"
         else:
             return f"{self.type}{self.line}{self.type}{str(self.text).replace(type,swap)}\n"
     __repr__ = __str__
@@ -128,7 +130,7 @@ def parse_patch(patch: str):
                 if init_pos+i >= len(patchlines):
                     break
                 current_line = patchlines[init_pos+i]
-                if current_line.startswith(MOD_FILE): break
+                if current_line.startswith((MOD_FILE,ADD_FILE,REM_FILE)): break
                 elif current_line.strip().startswith("#"): pass
                 elif current_line.startswith(MOD):
                     linedat = current_line.split(MOD,2)
@@ -162,7 +164,7 @@ def exec_patch(patch: ChangeLog, path: Path, log: bool = True):
     for filechange in patch.changes:
         if type(filechange) == FileChange:
             fpath = Path(path / filechange.file)
-            if filechange.type == REM_FILE:
+            """if filechange.type == REM_FILE:
                 if fpath.is_dir() and len(fpath.iterdir()) == 0:
                     fpath.rmdir()
                     if log: print(f"{fpath} removed.")
@@ -172,16 +174,28 @@ def exec_patch(patch: ChangeLog, path: Path, log: bool = True):
                     fpath.unlink()
                     if log: print(f"{fpath} removed.")
                 elif not fpath.exists():
-                    if log: print(f"{fpath} ordered to be removed, but does not exist; ignoring.")
+                    if log: print(f"{fpath} ordered to be removed, but does not exist; ignoring.")"""
             if filechange.type == ADD_FILE:
                 if filechange.changes == []:
                     if log: print(f"{fpath} being created as a directory (no changes; if you wanted to create a file, add at least \"+1+\")")
                     fpath.mkdir(parents=True,exist_ok=True)
                 else:
                     if log: print(f"{fpath} being written...")
+                    lines = []
                     for change in filechange.changes:
-                        
+                        if type(change) == Change:
+                            if str(change.line).isdigit():
+                                if int(change.line) > len(lines):
+                                    while len(lines) < int(change.line)-1: lines.append("")
+                                if int(change.line) <= len(lines):
+                                    lines.pop(int(change.line))
+                                lines.insert(int(change.line)-1,str(change.text))
 
+debug = False # My personal debugging stuff
+if debug == True:
+    expatch = parse_patch(Path(executed_from/"example.patch").resolve().read_text())
+    print("START",expatch,"END")
+    exec_patch(expatch,Path(executed_from),True)
 
 def main(argv = sys.argv, args = arg_parser.parse_args()):
     print(f"patchi version {v['major']}.{v['minor']}.{v['patch']}")

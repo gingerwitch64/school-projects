@@ -7,6 +7,10 @@ An example patchi file.
 +++yay.py
 +1+import math
 +3+print("Hello world!")
++8+#does this work, though?
++10+#...yes, yes it does! very neat.
+# Neat! Your lines don't actually have to be in order...although they should always be.
+# But if you really want to I guess you can change them up.
 +4+print(math.pi+ADDSYMBOL+1)
 ===changeme.txt
 =@FINDFIRSTLINE=me=MODSYMBOL=False===me=MODSYMBOL=True
