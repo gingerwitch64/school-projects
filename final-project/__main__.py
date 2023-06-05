@@ -167,12 +167,21 @@ def exec_patch(patch: ChangeLog, path: Path, log: bool = True):
                     fpath.rmdir()
                     if log: print(f"{fpath} removed.")
                 elif fpath.is_dir() and len(fpath.iterdir()) != 0:
-                    if log: print(f"{ERR_PREFIX} The directory {fpath}")
+                    print(f"{ERR_PREFIX} The directory {fpath} still has files in it (cannot delete non-empty folder)")
                 elif fpath.is_file():
                     fpath.unlink()
                     if log: print(f"{fpath} removed.")
                 elif not fpath.exists():
-                    if log: print(f"{fpath} does not exist; continuing.")
+                    if log: print(f"{fpath} ordered to be removed, but does not exist; ignoring.")
+            if filechange.type == ADD_FILE:
+                if filechange.changes == []:
+                    if log: print(f"{fpath} being created as a directory (no changes; if you wanted to create a file, add at least \"+1+\")")
+                    fpath.mkdir(parents=True,exist_ok=True)
+                else:
+                    if log: print(f"{fpath} being written...")
+                    for change in filechange.changes:
+                        
+
 
 def main(argv = sys.argv, args = arg_parser.parse_args()):
     print(f"patchi version {v['major']}.{v['minor']}.{v['patch']}")
