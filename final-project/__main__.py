@@ -5,17 +5,14 @@
 tutorial: list[str] = [] # Tutorial WILL be re-defined right before the program runs, but is removed from the top of the program to prevent clutter
 
 # IMPORTED LIBRARIES
-import sys, argparse # sys and argparse will be used to read command line arguments
-from platform import python_version # make sure python is up to date enough to use certain libraries
 from datetime import datetime # for change date/times
 from pathlib import Path # to keep track of file/path location
+from platform import python_version # make sure python is up to date enough to use certain libraries
 from time import time # to track function execution time
 
 # RUNTIME VARIABLES
 # Variables with info on the conditions of the program's execution 
-executed_from = Path(__file__).parent.resolve()
-arg_parser = argparse.ArgumentParser()
-arg_parser.add_argument("--pass", "-p", action="store_true", help="Run the program without passing to the shell.")
+executed_from = Path(__file__).parent.resolve() # parent of where file is executed from (ex. called from /home/user/patchi.py -> /home/user/)
 
 # PROGRAM BEHAVIOR VARIABLES
 v = { # The version of this program
@@ -226,70 +223,66 @@ def exec_patch(patch: ChangeLog, path: Path, log: bool = True): # log is used to
     end: float = time() # get the finishing time
     if log: print("Change execution completed in",end-start,"seconds.") # print time difference
 
-def main(argv = sys.argv, args = arg_parser.parse_args()):
+def main():
     print(f"patchi version {v['major']}.{v['minor']}.{v['patch']}")
     print(datetime.now().astimezone().strftime(DATETIME_FORMAT))
-    if len(argv) < 1 or (len(argv) < 2 and Path(argv[0]).resolve() == Path(__file__).resolve()): # This first statement is the shell. The program will redirect to here if no arguments are given.
-        print("No arguments given, passing off to built-in shell:")
-        shell = True # while loop variable
-        path = executed_from # starting path
-        help_text = [
-            "",
-            "patchi help menu",
-            "tutorial | tutor | t - Start a walkthrough on how to write a patchi file",
-            "help | h - Prints this help text",
-            "quit | exit | q - Exits this shell",
-            "apply | execute [patchi file] - Parse and execute a patch file",
-            "    NOTE: Make sure you are in the directory that you want the patch to be executed in.",
-            "sysarg - Print arguments that were supplied to the program",
-            "datetime | dt | d - Print datetime in patchi's format",
-            "cd | changedir [directory] - Update the working directory",
-            "ls | dir | listdir - List all files in the current path",
-            "",
-            ]
-        while shell:
-            # output patchi x.y.z, /current/path: and get the argument(s) following
-            given = input(f"patchi {v['major']}.{v['minor']}.{v['patch']}\n{path}: ").split(" ")
-            command = given[0] # for ease of coding, also makes sense intuitively because then given[1] will be your first arg
-            if command in {"quit","exit","q"}: # checks if command is any one of these
-                print("Quitting")
-                quit(0) # quits with code 0 (success on most operating systems)
-            elif command in {"help","h"}:
-                for line in help_text: print(line)
-            elif command in {"tutorial","tutor","t"}: # tutorial text
-                i = 0
-                while i < len(tutorial):
-                    print(i+1,tutorial[i])
-                    inpt = input() # will continue to next line upon [ENTER]
-                    if inpt in {"quit","exit","q","end","stop"}: break # break quits while loop
-                    i+=1 # next piece
-            elif command == "sysarg":
-                print(argv) # system arguments
-            elif command in {"apply","execute","exec"}:
-                exec_patch(
-                    parse_patch(Path(path / given[1])
-                                .resolve() # simplify/system-specify path
-                                .open() # open file
-                                .read() # read the plain text, DON'T split by lines
-                    ),
-                    path # from where changes will be executed
-                )
-            elif command in {"datetime","dt","d"}: # patchi compatable datetime generation
-                print(f"@DATETIME\n{datetime.now().astimezone().strftime(DATETIME_FORMAT)}")
-            elif command in {"cd","changedir"}:
-                if len(given) == 1:
-                    print(f"{ERR_PREFIX} Command requires 1 argument.")
-                elif Path(path / given[1]).resolve().is_dir():
-                    path = Path(path / given[1]).resolve()
-                else:
-                    print(f"{ERR_PREFIX} Directory \"{Path(path / given[1])}\" does not exist.")
-            elif command in {"ls","dir","listdir"}:
-                for dir in path.iterdir():
-                    sdir = str(dir.resolve()).replace("\\","/").split("/") # split file path
-                    print(sdir[len(sdir)-1]) # get last part of file path (will be the file name)
+    print("Passing off to shell")
+    shell = True # while loop variable
+    path = executed_from # starting path
+    help_text = [
+        "",
+        "patchi help menu",
+        "tutorial | tutor | t - Start a walkthrough on how to write a patchi file",
+        "help | h - Prints this help text",
+        "quit | exit | q - Exits this shell",
+        "apply | execute [patchi file] - Parse and execute a patch file",
+        "    NOTE: Make sure you are in the directory that you want the patch to be executed in.",
+        "datetime | dt | d - Print datetime in patchi's format",
+        "cd | changedir [directory] - Update the working directory",
+        "ls | dir | listdir - List all files in the current path",
+        "",
+        ]
+    while shell:
+        # output patchi x.y.z, /current/path: and get the argument(s) following
+        given = input(f"patchi {v['major']}.{v['minor']}.{v['patch']}\n{path}: ").split(" ")
+        command = given[0] # for ease of coding, also makes sense intuitively because then given[1] will be your first arg
+        if command in {"quit","exit","q"}: # checks if command is any one of these
+            print("Quitting")
+            quit(0) # quits with code 0 (success on most operating systems)
+        elif command in {"help","h"}:
+            for line in help_text: print(line)
+        elif command in {"tutorial","tutor","t"}: # tutorial text
+            i = 0
+            while i < len(tutorial):
+                print(i+1,tutorial[i])
+                inpt = input() # will continue to next line upon [ENTER]
+                if inpt in {"quit","exit","q","end","stop"}: break # break quits while loop
+                i+=1 # next piece
+        elif command in {"apply","execute","exec"}:
+            exec_patch(
+                parse_patch(Path(path / given[1])
+                            .resolve() # simplify/system-specify path
+                            .open() # open file
+                            .read() # read the plain text, DON'T split by lines
+                ),
+                path # from where changes will be executed
+            )
+        elif command in {"datetime","dt","d"}: # patchi compatable datetime generation
+            print(f"@DATETIME\n{datetime.now().astimezone().strftime(DATETIME_FORMAT)}")
+        elif command in {"cd","changedir"}:
+            if len(given) == 1:
+                print(f"{ERR_PREFIX} Command requires 1 argument.")
+            elif Path(path / given[1]).resolve().is_dir():
+                path = Path(path / given[1]).resolve()
             else:
-                print(f"Unrecognized keyword: \"{command}\"")
-                for line in help_text: print(line)
+                print(f"{ERR_PREFIX} Directory \"{Path(path / given[1])}\" does not exist.")
+        elif command in {"ls","dir","listdir"}:
+            for dir in path.iterdir():
+                sdir = str(dir.resolve()).replace("\\","/").split("/") # split file path
+                print(sdir[len(sdir)-1]) # get last part of file path (will be the file name)
+        else:
+            print(f"Unrecognized keyword: \"{command}\"")
+            for line in help_text: print(line)
 
 # Here is the Tutorial, and where it is redefined.
 tutorial = [
