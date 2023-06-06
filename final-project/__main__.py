@@ -75,7 +75,7 @@ class FileChange: # For changes per file
         self.file = file
         self.changes = changes
     def eval_path(self,path: Path): # helper function, currently unused
-        return path / self.file
+        return Path(path / self.file).resolve()
     def __str__(self) -> str:
         start = f"{self.type}{self.file}\n"
         for change in self.changes:
@@ -165,68 +165,66 @@ def parse_patch(patch: str):
             out_patch.changes.append(FileChange(REM_FILE,line.strip(REM_FILE).replace(REM_ALT,REM),[]))
     return out_patch # return the ChangeLog with all of its data
 
-def exec_patch(patch: ChangeLog, path: Path, log: bool = True):
-    start: float = time()
-    for filechange in patch.changes:
-        if type(filechange) == FileChange:
-            fpath = Path(path / filechange.file)
+def exec_patch(patch: ChangeLog, path: Path, log: bool = True): # log is used to print data, mainly for debugging but useful for end users
+    start: float = time() # a float, which will be used to track how long it took this to run
+    for filechange in patch.changes: # ChangeLog's changes are FileChange(s)
+        if type(filechange) == FileChange: # mainly so editors like VSCode recognize object classes
+            fpath = filechange.eval_path(path) # evaluate file location
             if filechange.type == REM_FILE:
-                if fpath.is_dir() and len(fpath.iterdir()) == 0:
+                if fpath.is_dir() and len(fpath.iterdir()) == 0: # check if dir is empty
                     fpath.rmdir()
                     if log: print(f"{fpath} removed.")
-                elif fpath.is_dir() and len(fpath.iterdir()) != 0:
+                elif fpath.is_dir() and len(fpath.iterdir()) != 0: # if dir is not empty, simply skip it
                     print(f"{ERR_PREFIX} The directory {fpath} still has files in it (cannot delete non-empty folder)")
-                elif fpath.is_file():
+                elif fpath.is_file(): # if file, then remove
                     fpath.unlink()
                     if log: print(f"{fpath} removed.")
-                elif not fpath.exists():
+                elif not fpath.exists(): # if non-existent, ignore but log it
                     if log: print(f"{fpath} ordered to be removed, but does not exist; ignoring.")
             elif filechange.type == ADD_FILE:
-                if filechange.changes == []:
+                if filechange.changes == []: # explained by print statement under this comment
                     if log: print(f"{fpath} being created as a directory (no changes; if you wanted to create a file, add at least \"+1+\")")
-                    fpath.mkdir(parents=True,exist_ok=True)
-                else:
+                    fpath.mkdir(parents=True,exist_ok=True) # create any directories inbetween, okay if it already exists
+                else: # if there are changes, will be a file
                     if log: print(f"{fpath} being written...")
                     lines = []
                     for change in filechange.changes:
                         if type(change) == Change:
-                            if str(change.line).isdigit():
-                                if int(change.line) > len(lines):
-                                    while len(lines) < int(change.line)-1: lines.append("")
+                            if str(change.line).isdigit(): # make sure that this is not a function, not that it should be
+                                if int(change.line) > len(lines): # if the line is out of bounds of the current lines length,
+                                    while len(lines) < int(change.line)-1: lines.append("") # add more lines
                                 if int(change.line) <= len(lines):
-                                    lines.pop(int(change.line))
-                                lines.insert(int(change.line)-1,str(change.text))
+                                    lines.pop(int(change.line)) # pop line before adding
+                                lines.insert(int(change.line)-1,str(change.text)) # now insert line
                     with open(fpath,mode="w+") as file:
-                        file.write('\n'.join(lines))
+                        file.write('\n'.join(lines)) # write lines
             elif filechange.type == MOD_FILE:
-                lines = [i.rstrip('\n') for i in open(fpath).readlines()]
+                lines = [i.rstrip('\n') for i in open(fpath).readlines()] # because reading from an existing file, make sure to strip newlines
                 for change in filechange.changes:
                     if type(change) == Change:
-                        if str(change.line).isdigit(): change.line = int(change.line)
-                        elif str(change.line).isdigit() == False:
+                        if str(change.line).isdigit(): change.line = int(change.line) # if digit, make it a digit
+                        elif str(change.line).isdigit() == False: # if not a digit, evaluate function
                             try:
                                 if change.line == FINDFIRSTLINE: change.line = lines.index(str(change.condition))
+                                # FINDLASTLINE: reverse the list, find the index, then subtract from line length to get the normal index
                                 elif change.line == FINDLASTLINE: change.line = len(lines) - [lines[i] for i in range(len(lines)-1,-1,-1)].index(change.condition)
-                            except ValueError:
+                            except ValueError: # .index() returns ValueError if no matches are found
                                 print(f"{ERR_PREFIX} {change.condition} was not found on any line; {change.type} operation to \"{change.text}\" will not be made.")
-                                continue
-                        if change.type == ADD:
+                                continue # skip this change
+                        if change.type == ADD: # direct insertion: no lines changed
                             if int(change.line) > len(lines):
                                 while len(lines) < int(change.line)-1: lines.append("")
                             lines.insert(int(change.line)-1,str(change.text))
-                        elif change.type == REM:
+                        elif change.type == REM: # delete line
                             lines.pop(int(change.line))
-                        elif change.type == MOD:
+                        elif change.type == MOD: # replacement, remove one line and put in another
                             if int(change.line) > len(lines):
                                 while len(lines) < int(change.line)-1: lines.append("")
-                            lines.pop(int(change.line))
-                            lines.insert(int(change.line),str(change.text))
-                    print(change.line)
-                    print(lines)
-                with open(fpath,mode="w+") as file:
-                    file.write('\n'.join(lines))
-    end = time()
-    if log: print("Change execution completed in",end-start,"seconds.")
+                            lines[int(change.line)-1] = change.text # replace text
+                with open(fpath,mode="w+") as file: # open as write and create, just in case it doesn't exist
+                    file.write('\n'.join(lines)) # join lines by a newline (removed in the beginning)
+    end: float = time() # get the finishing time
+    if log: print("Change execution completed in",end-start,"seconds.") # print time difference
 
 def main(argv = sys.argv, args = arg_parser.parse_args()):
     print(f"patchi version {v['major']}.{v['minor']}.{v['patch']}")
@@ -234,8 +232,8 @@ def main(argv = sys.argv, args = arg_parser.parse_args()):
     # This first statement is the shell. The program will redirect to here if no arguments are given.
     if len(argv) < 1 or (len(argv) < 2 and Path(argv[0]).resolve() == Path(__file__).resolve()):
         print("No arguments given, passing off to built-in shell:")
-        shell = True
-        path = executed_from
+        shell = True # while loop variable
+        path = executed_from # starting path
         help_text = [
             "",
             "patchi help menu",
@@ -251,28 +249,33 @@ def main(argv = sys.argv, args = arg_parser.parse_args()):
             "",
             ]
         while shell:
+            # output patchi x.y.z, /current/path: and get the argument(s) following
             given = input(f"patchi {v['major']}.{v['minor']}.{v['patch']}\n{path}: ").split(" ")
-            command = given[0]
-            if command in {"quit","exit","q"}:
+            command = given[0] # for ease of coding, also makes sense intuitively because then given[1] will be your first arg
+            if command in {"quit","exit","q"}: # checks if command is any one of these
                 print("Quitting")
-                quit(0)
+                quit(0) # quits with code 0 (success on most operating systems)
             elif command in {"help","h"}:
                 for line in help_text: print(line)
-            elif command in {"tutorial","tutor","t"}:
+            elif command in {"tutorial","tutor","t"}: # tutorial text
                 i = 0
                 while i < len(tutorial):
                     print(i+1,tutorial[i])
-                    input()
-                    i+=1
+                    inpt = input() # will continue to next line upon [ENTER]
+                    if inpt in {"quit","exit","q","end","stop"}: break # break quits while loop
+                    i+=1 # next piece
             elif command == "sysarg":
-                print(argv)
-            elif command in {"apply","execute"}:
+                print(argv) # system arguments
+            elif command in {"apply","execute","exec"}:
                 exec_patch(
-                    parse_patch(Path(path / given[1]).resolve().open().read()),
-                    path,
-                    True
+                    parse_patch(Path(path / given[1])
+                                .resolve() # simplify/system-specify path
+                                .open() # open file
+                                .read() # read the plain text, DON'T split by lines
+                    ),
+                    path # from where changes will be executed
                 )
-            elif command in {"datetime","dt","d"}:
+            elif command in {"datetime","dt","d"}: # patchi compatable datetime generation
                 print(f"@DATETIME\n{datetime.now().astimezone().strftime(DATETIME_FORMAT)}")
             elif command in {"cd","changedir"}:
                 if len(given) == 1:
@@ -283,15 +286,15 @@ def main(argv = sys.argv, args = arg_parser.parse_args()):
                     print(f"{ERR_PREFIX} Directory \"{Path(path / given[1])}\" does not exist.")
             elif command in {"ls","dir","listdir"}:
                 for dir in path.iterdir():
-                    sdir = str(dir.resolve()).replace("\\","/").split("/")
-                    print(sdir[len(sdir)-1])
+                    sdir = str(dir.resolve()).replace("\\","/").split("/") # split file path
+                    print(sdir[len(sdir)-1]) # get last part of file path (will be the file name)
             else:
-                print("Unrecognized keyword.")
+                print(f"Unrecognized keyword: \"{command}\"")
                 for line in help_text: print(line)
 
 # Here is the Tutorial, and where it is redefined.
 tutorial = [
-"(Press [ENTER] to print the next set of instructions.)",
+"(Press [ENTER] to print the next set of instructions, stop or end to quit.)",
 "This tutorial will walk you through the essential parts of a patchi file.",
 """\
 Firstly, it should be made clear the design of this format and program.
