@@ -229,8 +229,7 @@ def exec_patch(patch: ChangeLog, path: Path, log: bool = True): # log is used to
 def main(argv = sys.argv, args = arg_parser.parse_args()):
     print(f"patchi version {v['major']}.{v['minor']}.{v['patch']}")
     print(datetime.now().astimezone().strftime(DATETIME_FORMAT))
-    # This first statement is the shell. The program will redirect to here if no arguments are given.
-    if len(argv) < 1 or (len(argv) < 2 and Path(argv[0]).resolve() == Path(__file__).resolve()):
+    if len(argv) < 1 or (len(argv) < 2 and Path(argv[0]).resolve() == Path(__file__).resolve()): # This first statement is the shell. The program will redirect to here if no arguments are given.
         print("No arguments given, passing off to built-in shell:")
         shell = True # while loop variable
         path = executed_from # starting path
@@ -420,9 +419,12 @@ As is the goal of patchi, this patchfile is clean, legible and consise.\
 
 # Checks if python's version is greater than 3.4.x
 # This is to ensure compatability with pathlib.
-if (__name__ == "__main__") and (int(python_version().split(".")[0]) == v_req["major"]) and (int(python_version().split(".")[1]) >= v_req["minor"]) or (int(python_version().split(".")[0]) > v_req["major"]):
+if (__name__ == "__main__") and (
+int(python_version().split(".")[0]) == v_req["major"]) and (int(python_version().split(".")[1]) >= v_req["minor"] # is version 3.x?
+) or (
+int(python_version().split(".")[0]) > v_req["major"]): # is the version major >3?
     main()
 else:
     print(f"{ERR_PREFIX}: Python version must be at least {v_req['major']}.{v_req['minor']}")
-    print(f"You python version is {python_version()}")
+    print(f"Your python version is {python_version()}")
     # A quit statement is not needed here; if the program does not meet the version requirement, it will quit anyhow (End of File)
