@@ -337,6 +337,9 @@ File indicators will use three of either:
 --- indicates deletion of a file
 === indicates modification of a file
 
+Also note that +++ can be used to create a directory if you don't specify any changes,
+and --- can be used to delete (empty) directories and files.
+
 Example:
 +++new.txt
 +4+Hello, world!
@@ -355,7 +358,56 @@ Example:
 -5-while True: pass
  # Similarly, this will remove a line but move all following lines upwards.\
 """,
-"There will be more to come!",
+"""\
+Alt-text are used in place of the +, -, and = symbols to allow the program to parse correctly.
+
+Alt-texts are not required when a line number is present.
+
+Alt-texts are:
++ADDSYMBOL+ for +
+-REMSYMBOL- for -
+=MODSYMBOL= for =\
+""",
+"""\
+patchi has its own form of functions.
+As of now there are two: FINDFIRSTLINE and FINDLASTLINE.
+The syntax for these functions are as follows:
+=FUNCTION=text_to_use===text_to_replace
+
+For example, the line =FINDFIRSTLINE=me=MODSYMBOL=True===me=MODSYMBOL=False
+would change the first occurance of the line:
+me=False
+to:
+me=True
+
+Alt-texts MUST be used when a function is included in a line, but you only need to use alt-texts if your operation uses a corresponding symbol.\
+""",
+"""\
+Finally, here is an example of a patch file:
+
+@DESCRIPTION
+My first patchi file!
+
+@DATETIME
+2023/05/31 23:00:00+0000
+
++++addme.txt
++1+yay :)
+
++++newdir
+
+---removeme.txt
+
+---emptydir
+ # patchi will automatically evaluate whether or not a path is a directory or file.
+
+===changeme.txt
+=FINDLASTLINE=me=MODSYMBOL=True===me=MODSYMBOL=False\
+"""
+"""\
+As is the goal of patchi, this patchfile is clean, legible and consise.\
+"""
+"That's all for now!",
 ]
 
 # Checks if python's version is greater than 3.4.x
