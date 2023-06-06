@@ -16,5 +16,7 @@ An example patchi file.
 =FINDFIRSTLINE=me=MODSYMBOL=True===me=MODSYMBOL=False
 # Usage: =FUNCTION={text_to_place}==={text_to_replace}
 -FINDFIRSTLINE----e
+# REM operations inherently don't need a text to place argument
+# Therefore: -FUNCTION----{text_to_remove}
  
 ---deleteme.txt
