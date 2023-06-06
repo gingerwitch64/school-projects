@@ -39,17 +39,17 @@ FINDFIRSTLINE,FINDLASTLINE = "FINDFIRSTLINE","FINDLASTLINE"
 
 class Change: # For changes per line
     type = None # Insertion, removal or other modification change?
-    line = None
-    condition = None
-    text = str
-    def __init__(self,type,line,text,condition = None):
+    line = None # should either be a non-negative integer or a line-function
+    condition = None # if the line number has a function, this will be text to find
+    text = str # text to put on the line
+    def __init__(self,type,line,text,condition = None): # class initialization (call when making a variable)
         self.type = type
         self.text = text
         self.line = line
         self.condition = condition
     def __str__(self) -> str:
         type = str(self.type)
-        swap = ""
+        swap = "" # This makes sure that type symbols on same-type lines get replaced with alt-texts
         if type == ADD:
             swap  =  ADD_ALT
         elif type == REM:
@@ -58,32 +58,37 @@ class Change: # For changes per line
             swap  =  MOD_ALT
         else:
             swap = type
-        if self.condition != None:
+        if self.condition != None: # if there IS a condition (aka it is not none)
+            # example: +FINDFIRSTLINE+print("Hello world!")+++print(2+ADDSYMBOL+2)
             return f"{self.type}{self.line}{self.type}{str(self.text).replace(type,swap)}{str(self.type)*3}{str(self.condition).replace(type,swap)}\n"
         else:
+            # example: +1+print(2+ADDSYMBOL+2)
             return f"{self.type}{self.line}{self.type}{str(self.text).replace(type,swap)}\n"
     __repr__ = __str__
 
 class FileChange: # For changes per file
-    type = None
-    file = None
+    type = None # ADD, REM, MOD
+    file = None # file name
     changes = [] # The individual changes of the file
     def __init__(self,type,file,changes: list[Change]):
         self.type = type
         self.file = file
         self.changes = changes
-    def eval_path(self,path: Path):
+    def eval_path(self,path: Path): # helper function, currently unused
         return path / self.file
     def __str__(self) -> str:
         start = f"{self.type}{self.file}\n"
         for change in self.changes:
             start += str(change)
+        # example:
+        # +++new.txt
+        # +1+Hello world!
         return start
     __repr__ = __str__
 
 class ChangeLog: # For changes per patch
-    desc = str
-    date_time = datetime
+    desc = str # will be a description of a patch (like git's commit names)
+    date_time = datetime # date and time (if someone is manually writing patches, you can get this when you start the program or through the shell)
     changes = list[FileChange]
     def __init__(self,name,date_time: datetime,changes: list[FileChange]):
         self.desc = name
@@ -97,48 +102,48 @@ class ChangeLog: # For changes per patch
     __repr__ = __str__
 
 def parse_patch(patch: str):
-    out_patch = ChangeLog("",None,[])
-    patchlines = patch.splitlines()
+    out_patch = ChangeLog("",None,[]) # Create a placeholder ChangeLog class
+    patchlines = patch.splitlines() # go line by line through the patch file
     for line in patchlines:
         if line.startswith("@"):
-            if line.strip("@") == "DESCRIPTION":
+            if line.strip("@") == "DESCRIPTION": # look for @DESCRIPTION, line after will be the description
                 out_patch.desc = patchlines[patchlines.index(line)+1]
-            elif line.strip("@") == "DATETIME":
+            elif line.strip("@") == "DATETIME": # look for @DATETIME, line after will be converted and used as the datetime
                 out_patch.date_time = datetime.strptime(patchlines[patchlines.index(line)+1],DATETIME_FORMAT)
-    for line in patchlines:
+    for line in patchlines: # start going through again and look at actual changes
         if line.startswith(ADD_FILE):
-            f_change_buffer = FileChange(ADD_FILE,line.strip().strip(ADD_FILE),[])
-            init_pos = patchlines.index(line)
-            i = 1
+            f_change_buffer = FileChange(ADD_FILE,line.strip().strip(ADD_FILE),[]) # the FileChange object buffer; when finished adding data, this will be appended to the overall ChangeLog
+            init_pos = patchlines.index(line) # start parsing the individual line changes here
+            i = 1 # offset from the start
             while True:
-                if init_pos+i >= len(patchlines):
+                if init_pos+i >= len(patchlines): # if the current line is the end of the file, stop looking (prevents out-of-bounds error)
                     break
-                current_line = patchlines[init_pos+i]
-                if current_line.startswith(ADD_FILE): break
-                elif current_line.strip().startswith("#"): pass
+                current_line = patchlines[init_pos+i] # get the current line
+                if current_line.startswith(ADD_FILE): break # if the line starts with a +++, then it must not be a change under the current file
+                elif current_line.strip().startswith("#"): pass # ignore comments (strip line so there is not whitespace messing it up)
                 elif current_line.startswith(ADD):
-                    linedat = current_line.split(ADD,2)
+                    linedat = current_line.split(ADD,2) # split by ONLY the first two characters, giving you the line number and the text
                     f_change_buffer.changes.append(Change(ADD,int(linedat[1]),linedat[2].replace(ADD_ALT,ADD))) # With new files, line numbers MUST be specified.
-                else: break
-                i+=1
-            out_patch.changes.append(f_change_buffer)
+                else: break # FileChanges may be separated by empty lines and pretty much anything else, though not reccomended
+                i+=1 # next line!
+            out_patch.changes.append(f_change_buffer) # append the file change
         elif line.startswith(MOD_FILE):
-            f_change_buffer = FileChange(MOD_FILE,line.strip().strip(MOD_FILE),[])
-            init_pos = patchlines.index(line)
-            i = 1
+            f_change_buffer = FileChange(MOD_FILE,line.strip().strip(MOD_FILE),[]) # buffer
+            init_pos = patchlines.index(line) # start
+            i = 1 # offset
             while True:
-                if init_pos+i >= len(patchlines):
+                if init_pos+i >= len(patchlines): # if EOF, stop
                     break
-                current_line = patchlines[init_pos+i]
-                if current_line.startswith((MOD_FILE,ADD_FILE,REM_FILE)): break
+                current_line = patchlines[init_pos+i] # current line
+                if current_line.startswith((MOD_FILE,ADD_FILE,REM_FILE)): break # MODified files need to cover all cases
                 elif current_line.strip().startswith("#"): pass
-                elif current_line.startswith(MOD):
-                    linedat = current_line.split(MOD,2)
-                    if linedat[1].isdigit():
+                elif current_line.startswith(MOD): # all 3 of these different types are added the same way, so I will walk through the first:
+                    linedat = current_line.split(MOD,2) # data from this line
+                    if linedat[1].isdigit(): # if the line number (+NUM+) is an int, go ahead and just add the line
                         f_change_buffer.changes.append(Change(MOD,int(linedat[1]),linedat[2].replace(MOD_ALT,MOD)))
-                    else:
-                        chngdat_buffer = linedat[2].split(MOD_FILE)
-                        f_change_buffer.changes.append(Change(MOD,linedat[1],chngdat_buffer[0].replace(MOD_ALT,MOD),chngdat_buffer[1].replace(MOD_ALT,MOD)))
+                    else: # if the line number is not an int, it must be a function; grab the condition
+                        chngdat_buffer = linedat[2].split(MOD_FILE) # function arguments separated by ===
+                        f_change_buffer.changes.append(Change(MOD,linedat[1],chngdat_buffer[0].replace(MOD_ALT,MOD),chngdat_buffer[1].replace(MOD_ALT,MOD))) # notice condition is added
                 elif current_line.startswith(ADD):
                     linedat = current_line.split(ADD,2)
                     if linedat[1].isdigit():
@@ -153,12 +158,12 @@ def parse_patch(patch: str):
                     else:
                         chngdat_buffer = linedat[2].split(REM_FILE)
                         f_change_buffer.changes.append(Change(REM,linedat[1],chngdat_buffer[0].replace(REM_ALT,REM),chngdat_buffer[1].replace(REM_ALT,REM)))
-                else: break
-                i+=1
-            out_patch.changes.append(f_change_buffer)
-        elif line.startswith(REM_FILE):
+                else: break # if anything irrelavent, break
+                i+=1 # next
+            out_patch.changes.append(f_change_buffer) # append the FileChange
+        elif line.startswith(REM_FILE): # removing whole file, so no line changes needed
             out_patch.changes.append(FileChange(REM_FILE,line.strip(REM_FILE).replace(REM_ALT,REM),[]))
-    return out_patch
+    return out_patch # return the ChangeLog with all of its data
 
 def exec_patch(patch: ChangeLog, path: Path, log: bool = True):
     start: float = time()
