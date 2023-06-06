@@ -223,6 +223,9 @@ def exec_patch(patch: ChangeLog, path: Path, log: bool = True): # log is used to
     end: float = time() # get the finishing time
     if log: print("Change execution completed in",end-start,"seconds.") # print time difference
 
+def make_patch(patch: str, desc: str, path: Path):
+    ChangeLog(desc,datetime.now().astimezone().strftime(DATETIME_FORMAT),[])
+
 def main():
     print(f"patchi version {v['major']}.{v['minor']}.{v['patch']}")
     print(datetime.now().astimezone().strftime(DATETIME_FORMAT))
