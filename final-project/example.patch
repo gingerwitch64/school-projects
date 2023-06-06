@@ -13,11 +13,8 @@ An example patchi file.
 # But if you really want to I guess you can change them up.
 +4+print(math.pi+ADDSYMBOL+1)
 ===changeme.txt
-=FINDFIRSTLINE=me=MODSYMBOL=False===me=MODSYMBOL=True
--FINDFIRSTLINE-e---
-# Replace:
-# The first occurence of the line:
-#   me=False
-# With the text:
-#   me=True
-#---deleteme.txt
+=FINDFIRSTLINE=me=MODSYMBOL=True===me=MODSYMBOL=False
+# Usage: =FUNCTION={text_to_place}==={text_to_replace}
+-FINDFIRSTLINE----e
+ 
+---deleteme.txt

@@ -235,6 +235,8 @@ def main(argv = sys.argv, args = arg_parser.parse_args()):
             "tutorial | tutor | t - Start a walkthrough on how to write a patchi file",
             "help | h - Prints this help text",
             "quit | exit | q - Exits this shell",
+            "apply | execute [patchi file] - Parse and execute a patch file",
+            "    NOTE: Make sure you are in the directory that you want the patch to be executed in.",
             "sysarg - Print arguments that were supplied to the program",
             "datetime | dt | d - Print datetime in patchi's format",
             "cd | changedir [directory] - Update the working directory",
@@ -242,7 +244,7 @@ def main(argv = sys.argv, args = arg_parser.parse_args()):
             "",
             ]
         while shell:
-            given = input(f"{path}: ").split(" ")
+            given = input(f"patchi {v['major']}.{v['minor']}.{v['patch']}\n{path}: ").split(" ")
             command = given[0]
             if command in {"quit","exit","q"}:
                 print("Quitting")
@@ -257,6 +259,12 @@ def main(argv = sys.argv, args = arg_parser.parse_args()):
                     i+=1
             elif command == "sysarg":
                 print(argv)
+            elif command in {"apply","execute"}:
+                exec_patch(
+                    parse_patch(Path(path / given[1]).resolve().open().read()),
+                    path,
+                    True
+                )
             elif command in {"datetime","dt","d"}:
                 print(f"@DATETIME\n{datetime.now().astimezone().strftime(DATETIME_FORMAT)}")
             elif command in {"cd","changedir"}:
@@ -270,11 +278,6 @@ def main(argv = sys.argv, args = arg_parser.parse_args()):
                 for dir in path.iterdir():
                     sdir = str(dir.resolve()).replace("\\","/").split("/")
                     print(sdir[len(sdir)-1])
-            #elif command == "readpatch":
-            #    if Path(path / given[1]).resolve().exists():
-            #        parse_patch(Path(path / given[1]))
-            #    else:
-            #        print(f"{ERR_PREFIX} File \"{Path(path / given[1])}\" does not exist.")
             else:
                 print("Unrecognized keyword.")
                 for line in help_text: print(line)
