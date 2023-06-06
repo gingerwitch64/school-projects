@@ -5,7 +5,7 @@
 tutorial: list[str] = [] # Tutorial WILL be re-defined right before the program runs, but is removed from the top of the program to prevent clutter
 
 # IMPORTED LIBRARIES
-import sys, argparse, os # sys and argparse will be used to read command line arguments; os will be used for file operations
+import sys, argparse # sys and argparse will be used to read command line arguments
 from platform import python_version # make sure python is up to date enough to use certain libraries
 from datetime import datetime # for change date/times
 from pathlib import Path # to keep track of file/path location
