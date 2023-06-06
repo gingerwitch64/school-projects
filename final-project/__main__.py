@@ -210,12 +210,14 @@ def exec_patch(patch: ChangeLog, path: Path, log: bool = True):
                                 while len(lines) < int(change.line)-1: lines.append("")
                             lines.insert(int(change.line)-1,str(change.text))
                         elif change.type == REM:
-                            lines.pop(int(change.line)-1)
+                            lines.pop(int(change.line))
                         elif change.type == MOD:
                             if int(change.line) > len(lines):
                                 while len(lines) < int(change.line)-1: lines.append("")
-                            lines.pop(int(change.line)-1)
-                            lines.insert(int(change.line)-1,str(change.text))
+                            lines.pop(int(change.line))
+                            lines.insert(int(change.line),str(change.text))
+                    print(change.line)
+                    print(lines)
                 with open(fpath,mode="w+") as file:
                     file.write('\n'.join(lines))
     end = time()
