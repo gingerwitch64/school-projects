@@ -18,7 +18,7 @@ executed_from = Path(__file__).parent.resolve() # parent of where file is execut
 v = { # The version of this program
     "major": 0,
     "minor": 1,
-    "patch": 0,
+    "patch": 1,
 }
 v_req = { # Python Version Requirements
     "major": 3,
@@ -168,7 +168,7 @@ def exec_patch(patch: ChangeLog, path: Path, log: bool = True): # log is used to
         if type(filechange) == FileChange: # mainly so editors like VSCode recognize object classes
             fpath = filechange.eval_path(path) # evaluate file location
             if filechange.type == REM_FILE:
-                if fpath.is_dir() and len(fpath.iterdir()) == 0: # check if dir is empty
+                if fpath.is_dir() and len(list(fpath.iterdir())) == 0: # check if dir is empty
                     fpath.rmdir()
                     if log: print(f"{fpath} removed.")
                 elif fpath.is_dir() and len(fpath.iterdir()) != 0: # if dir is not empty, simply skip it
