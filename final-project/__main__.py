@@ -18,7 +18,7 @@ executed_from = Path(__file__).parent.resolve() # parent of where file is execut
 v = { # The version of this program
     "major": 0,
     "minor": 1,
-    "patch": 1,
+    "patch": 2,
 }
 v_req = { # Python Version Requirements
     "major": 3,
@@ -217,7 +217,7 @@ def exec_patch(patch: ChangeLog, path: Path, log: bool = True): # log is used to
                         elif change.type == MOD: # replacement, remove one line and put in another
                             if int(change.line) > len(lines):
                                 while len(lines) < int(change.line)-1: lines.append("")
-                            lines[int(change.line)-1] = change.text # replace text
+                            lines[int(change.line)] = change.text # replace text
                 with open(fpath,mode="w+") as file: # open as write and create, just in case it doesn't exist
                     file.write('\n'.join(lines)) # join lines by a newline (removed in the beginning)
     end: float = time() # get the finishing time
