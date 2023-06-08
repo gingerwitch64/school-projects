@@ -12,6 +12,14 @@ An example patchi file.
 # Neat! Your lines don't actually have to be in order...although they should always be.
 # But if you really want to I guess you can change them up.
 +4+print(math.pi+ADDSYMBOL+1)
+
+# giving no line-by-line changes will create a directory
++++newdir
+
+# by giving at least one line, a (text) file will be created
++++newdir/newfile
++1+
+
 ===changeme.txt
 =FINDFIRSTLINE=me=MODSYMBOL=True===me=MODSYMBOL=False
 # Usage: =FUNCTION={text_to_place}==={text_to_replace}
@@ -19,4 +27,6 @@ An example patchi file.
 # REM operations inherently don't need a text to place argument
 # Therefore: -FUNCTION----{text_to_remove}
  
----deleteme.txt
+---deleteme/deleteme.txt
+
+---deleteme
