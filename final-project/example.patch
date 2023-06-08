@@ -21,6 +21,7 @@ An example patchi file.
 +1+
 
 ===changeme.txt
++2+:D
 =FINDFIRSTLINE=me=MODSYMBOL=True===me=MODSYMBOL=False
 # Usage: =FUNCTION={text_to_place}==={text_to_replace}
 -FINDFIRSTLINE----e
