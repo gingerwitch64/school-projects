@@ -2,5 +2,4 @@
 
 Collection of programming assignments from my Advanced Programming high school class.
 
-If you're looking for recrecs, look [here](https://github.com/gingerwitch64/recrecs).
-- [GPA Calculator](https://gingerwitch64.github.io/school-projects/gpa-calc/index.html)
+This repository will be archived due to its age, but it will be hosted through GitHub Pages so that the web-based projects may remain accessible without having to clone the repository locally.
